@@ -1,0 +1,553 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f5f5f7;
+  --card-bg: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b6b70;
+  --border: #d8d8dc;
+  --accent: #3b5bdb;
+  --valid: #1a7f37;
+  --valid-bg: #ddf4e4;
+  --invalid: #b3261e;
+  --invalid-bg: #fbe4e2;
+  /* One ink/tint pair per token category, for the breakdown of a call. Declared
+     separately from --valid and --invalid even where the values coincide, so
+     retuning a badge later cannot silently move a word's colour. */
+  --cat-modifier: #8a5300;
+  --cat-modifier-bg: #fbeed3;
+  --cat-power: #6b3fa0;
+  --cat-power-bg: #eee4fa;
+  --cat-target: #0f6b66;
+  --cat-target-bg: #d6f0ee;
+  --cat-effect: #24439c;
+  --cat-effect-bg: #e1e7fb;
+  --cat-number: #1a7f37;
+  --cat-number-bg: #ddf4e4;
+  --cat-damage-type: #a32d68;
+  --cat-damage-type-bg: #fbdfec;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181c;
+    --card-bg: #212227;
+    --text: #eaeaec;
+    --muted: #9a9aa1;
+    --border: #35363c;
+    --accent: #7c93ff;
+    --valid: #6fd68f;
+    --valid-bg: #163524;
+    --invalid: #ff9a92;
+    --invalid-bg: #3a1f1e;
+    --cat-modifier: #e8b45c;
+    --cat-modifier-bg: #3a2b10;
+    --cat-power: #c2a3f5;
+    --cat-power-bg: #2b2140;
+    --cat-target: #6fd6cf;
+    --cat-target-bg: #10302e;
+    --cat-effect: #93a8ff;
+    --cat-effect-bg: #1c2447;
+    --cat-number: #6fd68f;
+    --cat-number-bg: #163524;
+    --cat-damage-type: #f39ac4;
+    --cat-damage-type-bg: #3c1d2e;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.card {
+  width: 100%;
+  max-width: 640px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.subtitle {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+}
+
+.subtitle a {
+  color: var(--accent);
+}
+
+.disclaimer {
+  margin: 0 0 1.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.input-wrap {
+  position: relative;
+}
+
+/* The underlay and the input must agree on every metric that affects where a
+   glyph lands, or the underline drifts away from the word it marks. */
+#call-input,
+.underlay {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: normal;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+#call-input {
+  position: relative;
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+#call-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.underlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--bg);
+  color: transparent;
+  white-space: pre;
+  overflow: hidden;
+  user-select: none;
+}
+
+.underlay mark {
+  background: none;
+  color: transparent;
+  border-bottom: 2px solid var(--invalid);
+}
+
+/* Nothing is wrong with any character that was typed -- the call just stops
+   early -- so the marker sits past the end of the text. */
+.underlay mark.at-end {
+  border-bottom-style: dotted;
+}
+
+.shape {
+  margin: 0.6rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.examples {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.example {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  margin: 0.15rem 0.15rem 0 0;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: none;
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.example:hover {
+  border-color: var(--accent);
+}
+
+.suggestions {
+  position: relative;
+  z-index: 1;
+  margin: 4px 0 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.suggestions li {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.suggestions li.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.suggestions li.info {
+  color: var(--muted);
+  font-style: italic;
+  cursor: default;
+}
+
+.results {
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+.badge-row {
+  margin-bottom: 0.75rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/*
+  `hidden` is only a user-agent `display: none`, which the author `display`
+  above outranks -- so the badge has to opt back out of the box it just asked
+  for, or an emptied input keeps wearing its last verdict.
+*/
+.badge[hidden] {
+  display: none;
+}
+
+.badge.valid {
+  background: var(--valid-bg);
+  color: var(--valid);
+}
+
+.badge.invalid {
+  background: var(--invalid-bg);
+  color: var(--invalid);
+}
+
+.hint {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  background: var(--invalid-bg);
+}
+
+/* Plain prose in the body font: this is the one thing on the page a
+   non-developer has to read, so it should not look like program output. */
+.hint-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.hint-fixes {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.fix {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--invalid);
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.fix:hover {
+  background: var(--invalid);
+  color: var(--card-bg);
+}
+
+.normalized-output {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  padding: 0.35rem 0.6rem;
+  margin-left: -0.6rem; /* Keep the text itself flush with the column above it. */
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Same trap as .badge[hidden] above: the author `display` outranks the user-agent
+   `display: none` that `hidden` provides, so an empty input would otherwise leave
+   an empty button's worth of height behind. */
+.normalized-output[hidden] {
+  display: none;
+}
+
+.normalized-output:hover,
+.normalized-output:focus-visible {
+  border-color: var(--border);
+}
+
+.normalized-output code {
+  font: inherit;
+}
+
+/* The affordance stays out of the way until the output is worth acting on. */
+.copy-label {
+  flex: none;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.normalized-output:hover .copy-label,
+.normalized-output:focus-visible .copy-label {
+  opacity: 1;
+}
+
+/* A confirmation nobody asked to see is worthless if it vanishes with the
+   pointer, so a fresh "Copied!" outranks the hover rules above. */
+.normalized-output.copied .copy-label {
+  opacity: 1;
+  color: var(--valid);
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+/* Same trap as .badge[hidden] and .normalized-output[hidden] above: the author
+   `display` outranks the user-agent `display: none` that `hidden` provides, so
+   an invalid call would otherwise keep the last valid call's breakdown. */
+.breakdown[hidden] {
+  display: none;
+}
+
+.breakdown-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* The tooltips are positioned against this row rather than the card, so a tip
+   on the first word cannot be clipped by the results box.
+   `white-space: pre-wrap` keeps the separators between words exactly as typed,
+   including a run of several. */
+.breakdown-row {
+  position: relative;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  line-height: 2.1;
+  white-space: pre-wrap;
+}
+
+.part {
+  padding: 0.15rem 0.3rem;
+  border-radius: 6px;
+  /* Colour alone should not have to carry the grouping: the underline gives a
+     second, monochrome-safe cue that these words belong to the same part. */
+  border-bottom: 2px solid currentColor;
+  background: var(--card-bg);
+  color: var(--muted);
+  cursor: help;
+}
+
+.part[data-category="modifier"] {
+  background: var(--cat-modifier-bg);
+  color: var(--cat-modifier);
+}
+
+.part[data-category="power"] {
+  background: var(--cat-power-bg);
+  color: var(--cat-power);
+}
+
+.part[data-category="target"] {
+  background: var(--cat-target-bg);
+  color: var(--cat-target);
+}
+
+.part[data-category="effect"] {
+  background: var(--cat-effect-bg);
+  color: var(--cat-effect);
+}
+
+.part[data-category="number"] {
+  background: var(--cat-number-bg);
+  color: var(--cat-number);
+}
+
+.part[data-category="damage-type"] {
+  background: var(--cat-damage-type-bg);
+  color: var(--cat-damage-type);
+}
+
+.part:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* The same opacity reveal as .copy-label above, and for the same reason: the
+   explanation stays out of the way until a word is worth asking about.
+   Deliberately not `visibility` or `display`, which would drop the tip out of
+   the accessibility tree along with the sentence a screen reader needs.
+   Anchored to the row, and full width, so the text wraps inside the card
+   instead of running off whichever edge the word happens to sit near. */
+.part-tip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin-bottom: 0.3rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  white-space: normal;
+  /* The tip sits inside the span it describes, so without this the pointer
+     would land on the tip and the text would be swept up by a selection of
+     the call itself. */
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.part-tip b {
+  color: inherit;
+}
+
+/* The label names the part; the sentence explains it. */
+.part-tip b::after {
+  content: " — ";
+  font-weight: normal;
+  color: var(--muted);
+}
+
+.part:hover .part-tip,
+.part:focus-visible .part-tip {
+  opacity: 1;
+}
+
+/* No rule of its own: the results section above already draws one, and a second
+   would frame the empty verdict area into a visible empty box before the user
+   has typed anything. Separated by space, the way the footer is. */
+.grammar {
+  margin-top: 1.5rem;
+}
+
+.grammar summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.grammar-note {
+  margin: 0.6rem 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.grammar-note a {
+  color: var(--accent);
+}
+
+/* Long alternation lines scroll inside the block rather than widening the card. */
+.grammar-source {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  /* An open drawer should not push the footer several screens down. */
+  max-height: 26rem;
+  overflow-y: auto;
+}
+
+.grammar-source code {
+  font: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+footer {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+footer a {
+  color: var(--accent);
+}

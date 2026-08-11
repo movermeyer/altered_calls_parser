@@ -1,0 +1,33 @@
+# Generated parser code is machine output from antlr-ng (see
+# scripts/generate.sh) -- reformatting it here would just cause the next
+# `make generate` to immediately "dirty" it again, so it's excluded
+# everywhere rather than per-hook.
+exclude: '(^|/)generated/'
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+
+  # Local hooks run through `uv run --directory python`, i.e. against the
+  # project's own managed venv at the exact dependency versions pinned in
+  # python/pyproject.toml, rather than pre-commit's isolated per-hook
+  # environments -- this keeps local checks identical to `make lint-python`
+  # and CI instead of a second, potentially drifting toolchain.
+  - repo: local
+    hooks:
+      - id: black
+        name: black (python/)
+        entry: uv run --directory python black .
+        language: system
+        files: ^python/
+        pass_filenames: false
+      - id: mypy
+        name: mypy (python/)
+        entry: uv run --directory python mypy
+        language: system
+        files: ^python/
+        pass_filenames: false

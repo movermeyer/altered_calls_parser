@@ -1,0 +1,292 @@
+[
+  {
+    "id": "split-word-suggests-whole-word",
+    "raw": "knock down 5 fire",
+    "kind": "unknown-word",
+    "text": "\"knock\" isn't a call word. Did you mean \"Knockdown\" or \"Knockout\"?",
+    "offendingText": "knock",
+    "start": 0,
+    "end": 5,
+    "suggestions": ["Knockdown", "Knockout"]
+  },
+  {
+    "id": "typo-suggests-nearest-word",
+    "raw": "knockdwn 5 fire",
+    "kind": "unknown-word",
+    "text": "\"knockdwn\" isn't a call word. Did you mean \"Knockdown\"?",
+    "offendingText": "knockdwn",
+    "start": 0,
+    "end": 8,
+    "suggestions": ["Knockdown"]
+  },
+  {
+    "id": "typo-in-elemental-ice",
+    "raw": "knockdown 5 icd",
+    "kind": "unknown-word",
+    "text": "\"icd\" isn't a call word. Did you mean \"Ice\"?",
+    "offendingText": "icd",
+    "start": 12,
+    "end": 15,
+    "suggestions": ["Ice"]
+  },
+  {
+    "id": "typo-in-damage-type",
+    "raw": "stamna",
+    "kind": "unknown-word",
+    "text": "\"stamna\" isn't a call word. Did you mean \"Stamina\"?",
+    "offendingText": "stamna",
+    "start": 0,
+    "end": 6,
+    "suggestions": ["Stamina"]
+  },
+  {
+    "id": "typo-in-radiation",
+    "raw": "radation",
+    "kind": "unknown-word",
+    "text": "\"radation\" isn't a call word. Did you mean \"Radiation\"?",
+    "offendingText": "radation",
+    "start": 0,
+    "end": 8,
+    "suggestions": ["Radiation"]
+  },
+  {
+    "id": "unrecognisable-word-lists-categories",
+    "raw": "Zzzzz",
+    "kind": "unknown-word",
+    "text": "\"Zzzzz\" isn't a call word. Here you can put \"Overwhelm\", \"Power\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "offendingText": "Zzzzz",
+    "start": 0,
+    "end": 5
+  },
+  {
+    "id": "offending-text-keeps-original-casing",
+    "raw": "ZZZZZ",
+    "kind": "unknown-word",
+    "offendingText": "ZZZZZ",
+    "start": 0,
+    "end": 5
+  },
+
+  {
+    "id": "spelled-out-number",
+    "raw": "knockdown five fire",
+    "kind": "spelled-number",
+    "text": "Write the number in digits: \"5\", not \"five\".",
+    "offendingText": "five",
+    "start": 10,
+    "end": 14,
+    "suggestions": ["5"]
+  },
+  {
+    "id": "spelled-out-number-two-digit",
+    "raw": "slay twenty dark",
+    "kind": "spelled-number",
+    "text": "Write the number in digits: \"20\", not \"twenty\".",
+    "offendingText": "twenty",
+    "start": 5,
+    "end": 11,
+    "suggestions": ["20"]
+  },
+
+  {
+    "id": "effect-after-elemental",
+    "raw": "fire knockdown 5",
+    "kind": "misplaced-word",
+    "text": "\"knockdown\" can't go here. Here you can put a number or a damage type (like \"Fire\").",
+    "offendingText": "knockdown",
+    "start": 5,
+    "end": 14
+  },
+  {
+    "id": "effect-after-number",
+    "raw": "5 Fire Stun",
+    "kind": "misplaced-word",
+    "text": "\"Stun\" can't go here. Here you can put a number or a damage type (like \"Fire\").",
+    "offendingText": "Stun",
+    "start": 7,
+    "end": 11
+  },
+  {
+    "id": "second-effect",
+    "raw": "Stun Knockdown",
+    "kind": "misplaced-word",
+    "text": "\"Knockdown\" can't go here. Here you can put a number or a damage type (like \"Fire\").",
+    "offendingText": "Knockdown",
+    "start": 5,
+    "end": 14
+  },
+  {
+    "id": "target-without-power",
+    "raw": "You Stun",
+    "kind": "misplaced-word",
+    "text": "\"You\" can't go here. Here you can put \"Overwhelm\", \"Power\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "offendingText": "You",
+    "start": 0,
+    "end": 3
+  },
+  {
+    "id": "trailing-word-on-complete-call",
+    "raw": "knockdown 5 fire dark poison",
+    "kind": "misplaced-word",
+    "text": "The call is already complete before \"poison\", so there is nothing more to add.",
+    "offendingText": "poison",
+    "start": 22,
+    "end": 28,
+    "suggestions": []
+  },
+  {
+    "id": "drain-amount-missing",
+    "raw": "focus drain",
+    "kind": "misplaced-word",
+    "text": "\"drain\" can't go here. Here you can put a number or a damage type (like \"Fire\").",
+    "offendingText": "drain",
+    "start": 6,
+    "end": 11
+  },
+  {
+    "id": "armour-without-drain-amount",
+    "raw": "armour drain",
+    "kind": "misplaced-word",
+    "text": "\"armour\" can't go here. Here you can put \"Overwhelm\", \"Power\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "offendingText": "armour",
+    "start": 0,
+    "end": 6
+  },
+  {
+    "id": "third-elemental",
+    "raw": "Fire Dark Light",
+    "kind": "misplaced-word",
+    "text": "The call is already complete before \"Light\", so there is nothing more to add.",
+    "offendingText": "Light",
+    "start": 10,
+    "end": 15,
+    "suggestions": []
+  },
+
+  {
+    "id": "incomplete-resource-needs-drain",
+    "raw": "3 armour",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add \"Drain\".",
+    "offendingText": "",
+    "start": 8,
+    "end": 8,
+    "suggestions": ["Drain"]
+  },
+  {
+    "id": "incomplete-drain-amount-needs-resource",
+    "raw": "stun 5 3",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add a damage type (like \"Armour\").",
+    "offendingText": "",
+    "start": 8,
+    "end": 8,
+    "suggestions": ["Armour", "Flesh", "Focus", "Stamina"]
+  },
+  {
+    "id": "incomplete-bare-power",
+    "raw": "Power",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add \"Light\" or \"Word\".",
+    "offendingText": "",
+    "start": 5,
+    "end": 5,
+    "suggestions": ["Light", "Word"]
+  },
+  {
+    "id": "incomplete-power-word",
+    "raw": "power word",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add \"Overwhelm\", \"NPCs\", \"You\" or an effect (like \"Stun\").",
+    "offendingText": "",
+    "start": 10,
+    "end": 10
+  },
+  {
+    "id": "incomplete-overwhelm",
+    "raw": "overwhelm",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add an effect (like \"Stun\").",
+    "offendingText": "",
+    "start": 9,
+    "end": 9
+  },
+  {
+    "id": "incomplete-overwhelm-inside-power-word",
+    "raw": "power word you overwhelm",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add an effect (like \"Stun\").",
+    "offendingText": "",
+    "start": 24,
+    "end": 24
+  },
+  {
+    "id": "incomplete-bare-full",
+    "raw": "Full",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add \"Auto\".",
+    "offendingText": "",
+    "start": 4,
+    "end": 4,
+    "suggestions": ["Auto"]
+  },
+  {
+    "id": "incomplete-full-auto-needs-a-number",
+    "raw": "Full Auto",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add a number.",
+    "offendingText": "",
+    "start": 9,
+    "end": 9,
+    "suggestions": []
+  },
+  {
+    "id": "full-auto-cannot-take-a-second-effect",
+    "raw": "Full Auto Maim 3",
+    "kind": "misplaced-word",
+    "text": "\"Maim\" can't go here. Here you can put a number.",
+    "offendingText": "Maim",
+    "start": 10,
+    "end": 14,
+    "suggestions": []
+  },
+  {
+    "id": "full-auto-inside-power-word-is-misplaced",
+    "raw": "Power Word Full Auto 2",
+    "kind": "misplaced-word",
+    "text": "\"Full\" can't go here. Here you can put \"Overwhelm\", \"NPCs\", \"You\" or an effect (like \"Stun\").",
+    "offendingText": "Full",
+    "start": 11,
+    "end": 15
+  },
+  {
+    "id": "overwhelm-before-power-is-misplaced",
+    "raw": "overwhelm power word you stun",
+    "kind": "misplaced-word",
+    "text": "\"power\" can't go here. Here you can put an effect (like \"Stun\").",
+    "offendingText": "power",
+    "start": 10,
+    "end": 15
+  },
+
+  {
+    "id": "punctuation",
+    "raw": "knockdown!!!",
+    "kind": "invalid-character",
+    "text": "Calls are made of words and numbers only, so \"!\" can't appear in one.",
+    "offendingText": "!",
+    "start": 9,
+    "end": 10,
+    "suggestions": []
+  },
+  {
+    "id": "punctuation-mid-call",
+    "raw": "knockdown 5 @ fire",
+    "kind": "invalid-character",
+    "text": "Calls are made of words and numbers only, so \"@\" can't appear in one.",
+    "offendingText": "@",
+    "start": 12,
+    "end": 13,
+    "suggestions": []
+  }
+]

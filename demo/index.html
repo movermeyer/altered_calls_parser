@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Altered Damage Call Parser — Demo</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <main class="card">
+    <header>
+      <h1>Altered Damage Call Parser</h1>
+      <p class="subtitle">
+        Parse, validate, normalize, and autocomplete
+        <a href="https://github.com/movermeyer/altered_calls_parser" target="_blank" rel="noopener">Altered LARP</a>
+        damage calls.
+      </p>
+      <p class="disclaimer">
+        Unofficial, community-built project — not affiliated with or
+        endorsed by the creators of Altered LARP.
+      </p>
+      <p class="disclaimer">
+        This parser only tells you whether a call is syntactically valid. Additional rules may apply that make it
+        semantically invalid.
+      </p>
+    </header>
+
+    <div class="field">
+      <label for="call-input">Type a call</label>
+      <div class="input-wrap">
+        <!--
+            A mirror of the input's text sitting directly behind it, sharing its
+            font and box metrics, so that a <mark> around the offending words
+            lands exactly under them. The input itself is transparent.
+          -->
+        <div id="underlay" class="underlay" aria-hidden="true"></div>
+        <!-- maxlength pairs with MAX_CALL_LENGTH in src/main.ts; see the note there. -->
+        <input id="call-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="200"
+          placeholder="e.g., Knockdown 5 Fire" />
+        <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+      </div>
+      <p class="shape">
+        Typically, a damage call reads: <b>effect</b>, then a <b>number</b>, then a
+        <b>damage type</b> — and every part is optional.
+      </p>
+      <!--
+          Real links to their own ?q= URLs, so they can be opened in a new tab,
+          bookmarked, or copied from the context menu. A plain click is
+          intercepted in src/main.ts and fills the box in place instead of
+          reloading.
+        -->
+      <p class="examples">
+        Try:
+        <a class="example" href="?q=Knockdown+5+Fire">Knockdown 5 Fire 💥</a>
+        <a class="example" href="?q=Power+Word+Daze+1">Power Word Daze 1 🫨</a>
+        <a class="example" href="?q=3+Stamina+Drain">3 Stamina Drain 🪫</a>
+        <a class="example" href="?q=Full+Auto+3+Flesh">Full Auto 3 Flesh 🔫</a>
+        <a class="example" href="?q=Power+Light+Overwhelm+Knockdown+10+10+Stamina+Drain+Poison">Power Light Overwhelm
+          Knockdown 10 10 Stamina Drain Poison 🙈</a>
+      </p>
+    </div>
+
+    <section class="results">
+      <div class="badge-row">
+        <span id="valid-badge" class="badge" hidden></span>
+      </div>
+      <!--
+          Only the first problem is shown. ANTLR's error recovery cascades, so a
+          single mistake often reports several times, and a list of near-identical
+          complaints reads as several separate failures to someone who made one.
+        -->
+      <div id="hint" class="hint" hidden>
+        <p id="hint-text" class="hint-text"></p>
+        <div id="hint-fixes" class="hint-fixes" hidden></div>
+      </div>
+      <button type="button" id="normalized-output" class="normalized-output" title="Copy to clipboard" hidden>
+        <code id="normalized-text"></code>
+        <span id="copy-label" class="copy-label">Copy</span>
+      </button>
+      <!-- Screen readers get the copy confirmation the flash of text conveys visually. -->
+      <span id="copy-status" class="visually-hidden" role="status" aria-live="polite"></span>
+      <!--
+          What each word of the call is doing. Shown only for a call that
+          parses: an invalid one is already answered by the hint above and the
+          underlay behind the input, and a second, half-"unknown" reading of the
+          same text would be a third opinion nobody asked for.
+        -->
+      <div id="breakdown" class="breakdown" hidden>
+        <p class="breakdown-label">What each word is doing</p>
+        <!--
+            Filled in by src/main.ts. The spans it creates are not contiguous --
+            the lexer skips separators, so tokenize() returns nothing for the
+            spaces and hyphens between words, and main.ts puts whatever sat in
+            each gap back verbatim. So this row always reads back as exactly
+            what was typed.
+          -->
+        <p id="breakdown-row" class="breakdown-row"></p>
+      </div>
+    </section>
+
+    <!--
+        The contents of #grammar-source are filled in by the bundle from
+        grammar/Calls.g4 itself (esbuild inlines the file as text), so there is
+        no second copy of the rules here to fall out of date.
+      -->
+    <details class="grammar">
+      <summary>Syntax rules and exceptions</summary>
+      <p class="grammar-note">
+        The exact grammar this page runs on, including its notes on where it
+        differs from the rulebook —
+        <a href="https://github.com/movermeyer/altered_calls_parser/blob/main/grammar/Calls.g4" target="_blank"
+          rel="noopener">grammar/Calls.g4</a>
+      </p>
+      <pre class="grammar-source"><code id="grammar-source"></code></pre>
+    </details>
+
+    <footer>
+      Based on the
+      <a href="https://docs.google.com/document/d/1-WhH-Tlogm5gIzZnr2T3OYtau2sRdrpZROQMOvQcH18/edit?usp=sharing"
+        target="_blank" rel="noopener">version 3.2 rules</a>.
+      <br />
+      <a href="https://github.com/movermeyer/altered_calls_parser" target="_blank" rel="noopener">Source on GitHub</a>
+    </footer>
+  </main>
+
+  <!--
+      Deliberately a classic script, not type="module": module scripts are
+      CORS-checked, and a page opened as file:// has an opaque origin, so the
+      bundle fetch fails. A classic script keeps the demo openable straight
+      from disk. Pairs with esbuild's --format=iife in js/package.json.
+    -->
+  <script defer src="./dist/bundle.js"></script>
+</body>
+
+</html>

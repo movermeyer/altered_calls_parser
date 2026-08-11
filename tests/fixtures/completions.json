@@ -1,0 +1,191 @@
+[
+  {
+    "id": "start-of-input",
+    "raw": "",
+    "cursor": 0,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Auric", "Break", "Charm", "Command", "Dark", "Daze", "Death",
+      "Deep", "Disarm", "Fae", "Fear", "Fire", "Flesh", "Focus", "Full",
+      "Heal", "Ice", "Knockdown", "Knockout", "Light", "Maim", "Overwhelm",
+      "Pin", "Poison", "Power", "Rad", "Radiation", "Rage", "Repair", "Slam",
+      "Slay", "Stamina", "Stun"
+    ]
+  },
+  {
+    "id": "after-power",
+    "raw": "Power ",
+    "cursor": 6,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Light", "Word"]
+  },
+  {
+    "id": "partial-word-prefix-po",
+    "raw": "Po",
+    "cursor": 2,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Poison", "Power"]
+  },
+  {
+    "id": "complete-rad-still-offers-radiation",
+    "raw": "Rad",
+    "cursor": 3,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Rad", "Radiation"]
+  },
+  {
+    "id": "partial-word-prefix-radi",
+    "raw": "Radi",
+    "cursor": 4,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Radiation"]
+  },
+  {
+    "id": "after-power-partial-word",
+    "raw": "Power wo",
+    "cursor": 8,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Word"]
+  },
+  {
+    "id": "damage-type-after-effect-and-number",
+    "raw": "Stun 5 ",
+    "cursor": 7,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Armour", "Auric", "Dark", "Deep", "Fae", "Fire", "Flesh", "Focus",
+      "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
+    ]
+  },
+  {
+    "id": "damage-type-after-number-only",
+    "raw": "5 ",
+    "cursor": 2,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Armour", "Auric", "Dark", "Deep", "Fae", "Fire", "Flesh", "Focus",
+      "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
+    ]
+  },
+  {
+    "id": "number-or-damage-type-after-effect-only",
+    "raw": "Stun ",
+    "cursor": 5,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Auric", "Dark", "Deep", "Fae", "Fire", "Flesh", "Focus",
+      "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
+    ]
+  },
+  {
+    "id": "drain-resource-after-second-number",
+    "raw": "Stun 5 3 ",
+    "cursor": 9,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Armour", "Flesh", "Focus", "Stamina"]
+  },
+  {
+    "id": "second-damage-type-slot",
+    "raw": "Fire ",
+    "cursor": 5,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Auric", "Dark", "Deep", "Fae", "Fire", "Flesh", "Focus",
+      "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
+    ]
+  },
+  {
+    "id": "resource-drain-continuation",
+    "raw": "5 Focus ",
+    "cursor": 8,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Auric", "Dark", "Deep", "Drain", "Fae", "Fire", "Flesh", "Focus",
+      "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
+    ]
+  },
+  {
+    "id": "bare-resource-allows-second-damage-type",
+    "raw": "Focus ",
+    "cursor": 6,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Auric", "Dark", "Deep", "Fae", "Fire", "Flesh", "Focus",
+      "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
+    ]
+  },
+  {
+    "id": "power-word-target-then-basic-effect",
+    "raw": "Power Word You ",
+    "cursor": 15,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": [
+      "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear",
+      "Knockdown", "Knockout", "Maim", "Overwhelm", "Pin", "Rage", "Slam",
+      "Slay", "Stun"
+    ]
+  },
+  {
+    "id": "after-overwhelm-basic-effects-or-full-auto",
+    "raw": "Overwhelm ",
+    "cursor": 10,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": [
+      "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear", "Full",
+      "Knockdown", "Knockout", "Maim", "Pin", "Rage", "Slam", "Slay", "Stun"
+    ]
+  },
+  {
+    "id": "overwhelm-inside-power-word-then-basic-effect",
+    "raw": "Power Word You Overwhelm ",
+    "cursor": 25,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": [
+      "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear",
+      "Knockdown", "Knockout", "Maim", "Pin", "Rage", "Slam", "Slay", "Stun"
+    ]
+  },
+  {
+    "id": "full-needs-auto",
+    "raw": "Full ",
+    "cursor": 5,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Auto"]
+  },
+  {
+    "id": "full-auto-needs-a-number",
+    "raw": "Full Auto ",
+    "cursor": 10,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": []
+  },
+  {
+    "id": "damage-type-after-full-auto-number",
+    "raw": "Full Auto 2 ",
+    "cursor": 12,
+    "exhaustive": true,
+    "expectedNumberSlot": true,
+    "expectedKeywordLabels": [
+      "Auric", "Dark", "Deep", "Fae", "Fire", "Flesh", "Focus",
+      "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
+    ]
+  }
+]

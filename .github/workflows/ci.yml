@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          python-version: "3.14"
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "lts/*"
+
+      - name: Install Python dependencies
+        working-directory: python
+        run: uv sync
+
+      - name: Install JS dependencies
+        working-directory: js
+        run: npm ci
+
+      # Regenerated code must match what's committed -- catches
+      # grammar/Calls.g4 changes that weren't followed by `make generate`.
+      - name: Regenerate parsers and check for drift
+        run: |
+          ./scripts/generate.sh
+          git diff --exit-code -- python/src/altered_calls_parser/generated js/src/generated
+
+      - name: Lint Python (black, mypy)
+        working-directory: python
+        run: |
+          uv run black --check .
+          uv run mypy
+
+      - name: Typecheck JS/TS
+        working-directory: js
+        run: npm run typecheck
+
+      - name: Test Python
+        working-directory: python
+        run: uv run pytest
+
+      - name: Test JS
+        working-directory: js
+        run: npm test
+
+      - name: Build JS package
+        working-directory: js
+        run: npm run build
+
+      - name: Build demo bundle
+        working-directory: js
+        run: npm run build:demo

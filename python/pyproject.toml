@@ -1,0 +1,46 @@
+[project]
+name = "altered-calls-parser"
+version = "0.1.0"
+description = "Unofficial, fan-made parser to parse, validate, normalize, and autocomplete Altered LARP calls. Not affiliated with or endorsed by the creators of Altered LARP."
+license = "MIT"
+authors = [
+    { name = "Michael Overmeyer", email = "altered@overmeyer.io" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "antlr4-python3-runtime>=4.13.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+    "mypy>=2.3.0",
+    "pytest>=9.1.1",
+]
+
+[tool.black]
+target-version = ["py314"]
+extend-exclude = "src/altered_calls_parser/generated"
+
+[tool.mypy]
+python_version = "3.14"
+files = ["src", "tests"]
+exclude = ["src/altered_calls_parser/generated"]
+strict = true
+# The antlr4 runtime and antlr-ng's generated parser code are both
+# untyped (no py.typed marker / no annotations), so these two strict
+# sub-checks would otherwise force type: ignore comments on every call
+# across that boundary.
+disallow_subclassing_any = false
+disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = "antlr4.*"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
