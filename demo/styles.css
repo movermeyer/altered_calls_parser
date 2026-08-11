@@ -15,10 +15,6 @@
      retuning a badge later cannot silently move a word's colour. */
   --cat-modifier: #8a5300;
   --cat-modifier-bg: #fbeed3;
-  --cat-power: #6b3fa0;
-  --cat-power-bg: #eee4fa;
-  --cat-target: #0f6b66;
-  --cat-target-bg: #d6f0ee;
   --cat-effect: #24439c;
   --cat-effect-bg: #e1e7fb;
   --cat-number: #1a7f37;
@@ -42,10 +38,6 @@
     --invalid-bg: #3a1f1e;
     --cat-modifier: #e8b45c;
     --cat-modifier-bg: #3a2b10;
-    --cat-power: #c2a3f5;
-    --cat-power-bg: #2b2140;
-    --cat-target: #6fd6cf;
-    --cat-target-bg: #10302e;
     --cat-effect: #93a8ff;
     --cat-effect-bg: #1c2447;
     --cat-number: #6fd68f;
@@ -406,16 +398,6 @@ label {
 .part[data-category="modifier"] {
   background: var(--cat-modifier-bg);
   color: var(--cat-modifier);
-}
-
-.part[data-category="power"] {
-  background: var(--cat-power-bg);
-  color: var(--cat-power);
-}
-
-.part[data-category="target"] {
-  background: var(--cat-target-bg);
-  color: var(--cat-target);
 }
 
 .part[data-category="effect"] {

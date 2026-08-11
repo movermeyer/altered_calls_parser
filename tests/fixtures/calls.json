@@ -5,14 +5,7 @@
   { "id": "mixed-case-input", "raw": "kNoCkDoWn 5 FiRe", "valid": true, "canonical": "Knockdown-5-Fire" },
   { "id": "upper-case-input", "raw": "STUN", "valid": true, "canonical": "Stun" },
 
-  { "id": "power-word-you-stun", "raw": "Power Word You Stun", "valid": true, "canonical": "Power-Word-You-Stun" },
-  { "id": "power-word-no-target", "raw": "Power Word Stun", "valid": true, "canonical": "Power-Word-Stun" },
-  { "id": "power-light-npcs-daze", "raw": "Power Light NPCs Daze", "valid": true, "canonical": "Power-Light-NPCs-Daze" },
-
   { "id": "overwhelm-basic", "raw": "Overwhelm Stun", "valid": true, "canonical": "Overwhelm-Stun" },
-  { "id": "overwhelm-inside-power-word", "raw": "Power Word You Overwhelm Knockdown", "valid": true, "canonical": "Power-Word-You-Overwhelm-Knockdown" },
-  { "id": "overwhelm-inside-power-word-no-target", "raw": "Power Word Overwhelm Knockdown", "valid": true, "canonical": "Power-Word-Overwhelm-Knockdown" },
-  { "id": "overwhelm-inside-power-light", "raw": "Power Light Overwhelm Fear", "valid": true, "canonical": "Power-Light-Overwhelm-Fear" },
   { "id": "overwhelm-with-damage-types", "raw": "Overwhelm Slay 10 Fire", "valid": true, "canonical": "Overwhelm-Slay-10-Fire" },
 
   { "id": "resource-drain-focus", "raw": "5 Focus Drain", "valid": true, "canonical": "5-Focus-Drain" },
@@ -26,6 +19,7 @@
   { "id": "elemental-radiation", "raw": "Radiation", "valid": true, "canonical": "Radiation" },
   { "id": "elemental-radiation-keeps-its-own-spelling", "raw": "knockdown 5 radiation", "valid": true, "canonical": "Knockdown-5-Radiation" },
   { "id": "double-elemental-rad-and-radiation", "raw": "Rad Radiation", "valid": true, "canonical": "Rad-Radiation" },
+  { "id": "elemental-light", "raw": "Stun Light", "valid": true, "canonical": "Stun-Light" },
   { "id": "elemental-ice", "raw": "Ice", "valid": true, "canonical": "Ice" },
   { "id": "elemental-ice-with-number", "raw": "Knockdown 5 Ice", "valid": true, "canonical": "Knockdown-5-Ice" },
   { "id": "double-elemental", "raw": "Fire Dark", "valid": true, "canonical": "Fire-Dark" },
@@ -53,7 +47,7 @@
   { "id": "overwhelm-full-auto", "raw": "Overwhelm Full Auto 3 Dark Fire", "valid": true, "canonical": "Overwhelm-Full-Auto-3-Dark-Fire" },
   { "id": "full-auto-with-own-and-drain-number", "raw": "Full Auto 2 3 Flesh Drain", "valid": true, "canonical": "Full-Auto-2-3-Flesh-Drain" },
 
-  { "id": "full-complex-call", "raw": "Power Word You Overwhelm Slay 10 Dark Fire", "valid": true, "canonical": "Power-Word-You-Overwhelm-Slay-10-Dark-Fire" },
+  { "id": "full-complex-call", "raw": "Overwhelm Knockdown 10 10 Stamina Drain Poison", "valid": true, "canonical": "Overwhelm-Knockdown-10-10-Stamina-Drain-Poison" },
 
   { "id": "leading-trailing-spaces", "raw": " Stun ", "valid": true, "canonical": "Stun" },
   { "id": "leading-trailing-hyphens", "raw": "-Stun-", "valid": true, "canonical": "Stun" },
@@ -63,12 +57,8 @@
 
   { "id": "invalid-garbled-word", "raw": "Zzzzz", "valid": false },
   { "id": "invalid-wrong-field-order", "raw": "5 Fire Stun", "valid": false },
-  { "id": "invalid-bare-power", "raw": "Power", "valid": false },
   { "id": "invalid-bare-overwhelm", "raw": "Overwhelm", "valid": false },
-  { "id": "invalid-overwhelm-before-power-word", "raw": "Overwhelm Power Word You Knockdown", "valid": false },
-  { "id": "invalid-overwhelm-before-power-light", "raw": "Overwhelm Power Light Fear", "valid": false },
   { "id": "invalid-overwhelm-without-effect", "raw": "Overwhelm 5 Fire", "valid": false },
-  { "id": "invalid-target-without-power", "raw": "You Stun", "valid": false },
   { "id": "invalid-trailing-extra-effect", "raw": "Stun Knockdown", "valid": false },
   { "id": "invalid-triple-elemental", "raw": "Fire Dark Light", "valid": false },
   { "id": "invalid-three-damage-types", "raw": "Knockdown 5 Fire Flesh Heal", "valid": false },
@@ -81,8 +71,9 @@
   { "id": "invalid-full-auto-damage-type-without-number", "raw": "Full Auto Flesh", "valid": false },
   { "id": "invalid-full-auto-with-second-effect", "raw": "Full Auto Maim 3 Flesh", "valid": false },
   { "id": "invalid-full-auto-before-overwhelm", "raw": "Full Auto Overwhelm 2", "valid": false },
-  { "id": "invalid-full-auto-inside-power-word", "raw": "Power Word Full Auto 2", "valid": false },
-  { "id": "invalid-full-auto-inside-power-light", "raw": "Power Light Full Auto 2", "valid": false },
   { "id": "invalid-full-auto-drain-without-own-number", "raw": "Full Auto 3 Stamina Drain", "valid": false },
-  { "id": "invalid-auto-without-full", "raw": "Auto 2", "valid": false }
+  { "id": "invalid-auto-without-full", "raw": "Auto 2", "valid": false },
+
+  { "id": "invalid-power-word", "raw": "Power Word You Stun", "valid": false },
+  { "id": "invalid-power-light", "raw": "Power Light NPCs Daze", "valid": false }
 ]

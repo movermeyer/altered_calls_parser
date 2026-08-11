@@ -57,9 +57,8 @@ endorsed by the creators of Altered LARP.
   engine — it exists because no Python port of `antlr4-c3` does. It's
   intentionally scoped to a grammar this small and non-recursive; it
   is not meant to generalize to arbitrary ANTLR grammars.
-- **Not free-form target names.** `<target>` in Power Word / Power
-  Light calls is a fixed two-word enum (`You` / `NPCs`), not open name
-  capture — matched to how the calls are actually used, not the
-  grammar sketch's literal `<word>+` notation.
+- **Not calls other than Damage Calls.** Power Word, Power Light, and
+  spells are not *Damage Calls** and are out of scope. Same with Ability
+  Calls, Concoctions, Defensive calls etc.
 - **Not targeting languages beyond Python and JS/TS.** Other ANTLR
   targets (Java, C#, Go, etc.) are out of scope.

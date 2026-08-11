@@ -53,8 +53,17 @@
     "id": "unrecognisable-word-lists-categories",
     "raw": "Zzzzz",
     "kind": "unknown-word",
-    "text": "\"Zzzzz\" isn't a call word. Here you can put \"Overwhelm\", \"Power\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "text": "\"Zzzzz\" isn't a call word. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
     "offendingText": "Zzzzz",
+    "start": 0,
+    "end": 5
+  },
+  {
+    "id": "power-word-is-not-a-damage-call",
+    "raw": "Power Word You Stun",
+    "kind": "unknown-word",
+    "text": "\"Power\" isn't a call word. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "offendingText": "Power",
     "start": 0,
     "end": 5
   },
@@ -116,15 +125,6 @@
     "end": 14
   },
   {
-    "id": "target-without-power",
-    "raw": "You Stun",
-    "kind": "misplaced-word",
-    "text": "\"You\" can't go here. Here you can put \"Overwhelm\", \"Power\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
-    "offendingText": "You",
-    "start": 0,
-    "end": 3
-  },
-  {
     "id": "trailing-word-on-complete-call",
     "raw": "knockdown 5 fire dark poison",
     "kind": "misplaced-word",
@@ -147,7 +147,7 @@
     "id": "armour-without-drain-amount",
     "raw": "armour drain",
     "kind": "misplaced-word",
-    "text": "\"armour\" can't go here. Here you can put \"Overwhelm\", \"Power\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "text": "\"armour\" can't go here. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
     "offendingText": "armour",
     "start": 0,
     "end": 6
@@ -184,25 +184,6 @@
     "suggestions": ["Armour", "Flesh", "Focus", "Stamina"]
   },
   {
-    "id": "incomplete-bare-power",
-    "raw": "Power",
-    "kind": "incomplete",
-    "text": "The call isn't finished yet. Add \"Light\" or \"Word\".",
-    "offendingText": "",
-    "start": 5,
-    "end": 5,
-    "suggestions": ["Light", "Word"]
-  },
-  {
-    "id": "incomplete-power-word",
-    "raw": "power word",
-    "kind": "incomplete",
-    "text": "The call isn't finished yet. Add \"Overwhelm\", \"NPCs\", \"You\" or an effect (like \"Stun\").",
-    "offendingText": "",
-    "start": 10,
-    "end": 10
-  },
-  {
     "id": "incomplete-overwhelm",
     "raw": "overwhelm",
     "kind": "incomplete",
@@ -210,15 +191,6 @@
     "offendingText": "",
     "start": 9,
     "end": 9
-  },
-  {
-    "id": "incomplete-overwhelm-inside-power-word",
-    "raw": "power word you overwhelm",
-    "kind": "incomplete",
-    "text": "The call isn't finished yet. Add an effect (like \"Stun\").",
-    "offendingText": "",
-    "start": 24,
-    "end": 24
   },
   {
     "id": "incomplete-bare-full",
@@ -251,22 +223,13 @@
     "suggestions": []
   },
   {
-    "id": "full-auto-inside-power-word-is-misplaced",
-    "raw": "Power Word Full Auto 2",
+    "id": "overwhelm-must-be-followed-by-an-effect",
+    "raw": "overwhelm fire",
     "kind": "misplaced-word",
-    "text": "\"Full\" can't go here. Here you can put \"Overwhelm\", \"NPCs\", \"You\" or an effect (like \"Stun\").",
-    "offendingText": "Full",
-    "start": 11,
-    "end": 15
-  },
-  {
-    "id": "overwhelm-before-power-is-misplaced",
-    "raw": "overwhelm power word you stun",
-    "kind": "misplaced-word",
-    "text": "\"power\" can't go here. Here you can put an effect (like \"Stun\").",
-    "offendingText": "power",
+    "text": "\"fire\" can't go here. Here you can put an effect (like \"Stun\").",
+    "offendingText": "fire",
     "start": 10,
-    "end": 15
+    "end": 14
   },
 
   {

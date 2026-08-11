@@ -1,10 +1,11 @@
 """Labels each word of a call with the part of the syntax it belongs to.
 
 This is a parse-tree walk, not a lexer pass, because the lexer alone cannot
-tell these apart: "Light" is an elemental damage type in "Stun Light" but half
-of the power call in "Power Light Stun", and of the two numbers in "Knockdown 5
-3 Flesh Drain" the first is the damage amount while the second belongs to the
-drain. Only the rule a terminal sits under decides which.
+tell these apart: of the two numbers in "Knockdown 5 3 Flesh Drain" the first
+is the damage amount while the second belongs to the drain, and of the two
+"Flesh"es in "5 Flesh 3 Flesh Drain" the first is a damage type while the
+second is the resource being drained. Only the rule a terminal sits under
+decides which.
 
 The wording lives here (and in the TypeScript mirror, tokenize.ts) rather than
 in each consumer, and all of it comes from shared/canonical-tokens.json -- no
@@ -40,9 +41,8 @@ class CallToken:
     #: by definition not part of a call the canonicalizer would accept.
     canonical: str
     #: Which part of the syntax this word is, given where it sits in the call.
-    #: One of "overwhelm", "power-word", "power-light", "target", "effect",
-    #: "full-auto", "amount", "damage-type", "drain-amount", "drain-resource",
-    #: "drain", "unknown".
+    #: One of "overwhelm", "effect", "full-auto", "amount", "damage-type",
+    #: "drain-amount", "drain-resource", "drain", "unknown".
     role: str
     #: Coarse grouping for colour-coding: one of `categoryOrder`, or "unknown".
     #: Several roles share a category -- a drain's amount and a call's damage
@@ -81,7 +81,7 @@ class _Tokenizer(CallsVisitor):
 
     Every child is checked for None, including the ones the grammar makes
     mandatory. After error recovery a required child can be missing outright:
-    "power light" builds a PowerLightContext with no basicEffect under it.
+    "full" builds a FullAutoContext with neither an AUTO nor a number under it.
     Canonicalizer never meets this because normalize() throws before it walks
     an invalid tree, but tokenize() promises not to throw.
     """
@@ -128,44 +128,6 @@ class _Tokenizer(CallsVisitor):
         self._push_number(ctx.number(), "amount")
 
     def visitEffect(self, ctx: CallsParser.EffectContext) -> None:
-        power_word = ctx.powerWord()
-        power_light = ctx.powerLight()
-        basic_effect = ctx.basicEffect()
-        if power_word is not None:
-            self.visitPowerWord(power_word)
-        elif power_light is not None:
-            self.visitPowerLight(power_light)
-        elif basic_effect is not None:
-            self.visitBasicEffect(basic_effect)
-
-    def visitPowerWord(self, ctx: CallsParser.PowerWordContext) -> None:
-        self._push(_symbol(ctx.POWER()), "power-word")
-        self._push(_symbol(ctx.WORD_KW()), "power-word")
-        self._visit_power_tail(ctx.target(), ctx.basicEffect())
-
-    def visitPowerLight(self, ctx: CallsParser.PowerLightContext) -> None:
-        self._push(_symbol(ctx.POWER()), "power-light")
-        # The one label the lexer could never get right on its own: "Light" is
-        # an elemental damage type everywhere else in the grammar.
-        self._push(_symbol(ctx.LIGHT()), "power-light")
-        self._visit_power_tail(ctx.target(), ctx.basicEffect())
-
-    def _visit_power_tail(
-        self,
-        target: CallsParser.TargetContext | None,
-        basic_effect: CallsParser.BasicEffectContext | None,
-    ) -> None:
-        """Power Word and Power Light take the same optional target then
-        effect."""
-        if target is not None:
-            self.visitTarget(target)
-        if basic_effect is not None:
-            self.visitBasicEffect(basic_effect)
-
-    def visitTarget(self, ctx: CallsParser.TargetContext) -> None:
-        self._push_leaf(ctx, "target")
-
-    def visitBasicEffect(self, ctx: CallsParser.BasicEffectContext) -> None:
         # "Overwhelm" is an optional prefix on the effect keyword, so the
         # keyword itself is the rule's last token rather than its first.
         self._push(_symbol(ctx.OVERWHELM()), "overwhelm")

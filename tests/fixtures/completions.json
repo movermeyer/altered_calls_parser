@@ -9,17 +9,9 @@
       "Auric", "Break", "Charm", "Command", "Dark", "Daze", "Death",
       "Deep", "Disarm", "Fae", "Fear", "Fire", "Flesh", "Focus", "Full",
       "Heal", "Ice", "Knockdown", "Knockout", "Light", "Maim", "Overwhelm",
-      "Pin", "Poison", "Power", "Rad", "Radiation", "Rage", "Repair", "Slam",
+      "Pin", "Poison", "Rad", "Radiation", "Rage", "Repair", "Slam",
       "Slay", "Stamina", "Stun"
     ]
-  },
-  {
-    "id": "after-power",
-    "raw": "Power ",
-    "cursor": 6,
-    "exhaustive": true,
-    "expectedNumberSlot": false,
-    "expectedKeywordLabels": ["Light", "Word"]
   },
   {
     "id": "partial-word-prefix-po",
@@ -27,7 +19,7 @@
     "cursor": 2,
     "exhaustive": true,
     "expectedNumberSlot": false,
-    "expectedKeywordLabels": ["Poison", "Power"]
+    "expectedKeywordLabels": ["Poison"]
   },
   {
     "id": "complete-rad-still-offers-radiation",
@@ -46,12 +38,12 @@
     "expectedKeywordLabels": ["Radiation"]
   },
   {
-    "id": "after-power-partial-word",
-    "raw": "Power wo",
-    "cursor": 8,
+    "id": "partial-word-prefix-kno",
+    "raw": "kno",
+    "cursor": 3,
     "exhaustive": true,
     "expectedNumberSlot": false,
-    "expectedKeywordLabels": ["Word"]
+    "expectedKeywordLabels": ["Knockdown", "Knockout"]
   },
   {
     "id": "damage-type-after-effect-and-number",
@@ -128,36 +120,13 @@
     ]
   },
   {
-    "id": "power-word-target-then-basic-effect",
-    "raw": "Power Word You ",
-    "cursor": 15,
-    "exhaustive": true,
-    "expectedNumberSlot": false,
-    "expectedKeywordLabels": [
-      "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear",
-      "Knockdown", "Knockout", "Maim", "Overwhelm", "Pin", "Rage", "Slam",
-      "Slay", "Stun"
-    ]
-  },
-  {
-    "id": "after-overwhelm-basic-effects-or-full-auto",
+    "id": "after-overwhelm-effects-or-full-auto",
     "raw": "Overwhelm ",
     "cursor": 10,
     "exhaustive": true,
     "expectedNumberSlot": false,
     "expectedKeywordLabels": [
       "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear", "Full",
-      "Knockdown", "Knockout", "Maim", "Pin", "Rage", "Slam", "Slay", "Stun"
-    ]
-  },
-  {
-    "id": "overwhelm-inside-power-word-then-basic-effect",
-    "raw": "Power Word You Overwhelm ",
-    "cursor": 25,
-    "exhaustive": true,
-    "expectedNumberSlot": false,
-    "expectedKeywordLabels": [
-      "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear",
       "Knockdown", "Knockout", "Maim", "Pin", "Rage", "Slam", "Slay", "Stun"
     ]
   },

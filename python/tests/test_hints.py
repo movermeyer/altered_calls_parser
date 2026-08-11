@@ -58,9 +58,9 @@ def test_hint_underlines_the_bad_word() -> None:
 
 
 def test_unfinished_call_collapses_to_a_caret_at_the_end() -> None:
-    hint = parse("power light").errors[0].hint
+    hint = parse("full auto").errors[0].hint
     assert hint.kind == "incomplete"
-    assert (hint.start, hint.end, hint.offending_text) == (11, 11, "")
+    assert (hint.start, hint.end, hint.offending_text) == (9, 9, "")
 
 
 def test_did_you_mean_finds_prefix_match_edit_distance_would_miss() -> None:

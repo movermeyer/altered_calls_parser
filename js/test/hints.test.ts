@@ -52,10 +52,10 @@ describe("hints point at the offending span", () => {
   });
 
   test("collapses to a caret at the end for an unfinished call", () => {
-    const hint = parse("power light").errors[0].hint;
+    const hint = parse("full auto").errors[0].hint;
     expect(hint.kind).toBe("incomplete");
-    expect(hint.start).toBe(11);
-    expect(hint.end).toBe(11);
+    expect(hint.start).toBe(9);
+    expect(hint.end).toBe(9);
     expect(hint.offendingText).toBe("");
   });
 });

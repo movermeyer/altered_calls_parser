@@ -51,36 +51,6 @@ class Canonicalizer(CallsVisitor):
         self.words.append(ctx.number().NUMBER().getText())
 
     def visitEffect(self, ctx: CallsParser.EffectContext) -> None:
-        power_word = ctx.powerWord()
-        power_light = ctx.powerLight()
-        basic_effect = ctx.basicEffect()
-        if power_word is not None:
-            self.visitPowerWord(power_word)
-        elif power_light is not None:
-            self.visitPowerLight(power_light)
-        elif basic_effect is not None:
-            self.visitBasicEffect(basic_effect)
-
-    def visitPowerWord(self, ctx: CallsParser.PowerWordContext) -> None:
-        self.words.append(WORDS["POWER"])
-        self.words.append(WORDS["WORD_KW"])
-        target = ctx.target()
-        if target is not None:
-            self.visitTarget(target)
-        self.visitBasicEffect(ctx.basicEffect())
-
-    def visitPowerLight(self, ctx: CallsParser.PowerLightContext) -> None:
-        self.words.append(WORDS["POWER"])
-        self.words.append(WORDS["LIGHT"])
-        target = ctx.target()
-        if target is not None:
-            self.visitTarget(target)
-        self.visitBasicEffect(ctx.basicEffect())
-
-    def visitTarget(self, ctx: CallsParser.TargetContext) -> None:
-        self.words.append(_leaf_word(ctx))
-
-    def visitBasicEffect(self, ctx: CallsParser.BasicEffectContext) -> None:
         # "Overwhelm" is an optional prefix on the effect keyword, so the
         # keyword itself is the rule's last token rather than its first.
         if ctx.OVERWHELM() is not None:

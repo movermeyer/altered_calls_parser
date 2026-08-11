@@ -3,12 +3,8 @@ import { AbstractParseTreeVisitor } from "antlr4ng";
 
 
 import { DamageCallContext } from "./CallsParser.js";
-import { EffectContext } from "./CallsParser.js";
 import { FullAutoContext } from "./CallsParser.js";
-import { PowerWordContext } from "./CallsParser.js";
-import { PowerLightContext } from "./CallsParser.js";
-import { TargetContext } from "./CallsParser.js";
-import { BasicEffectContext } from "./CallsParser.js";
+import { EffectContext } from "./CallsParser.js";
 import { NumberContext } from "./CallsParser.js";
 import { DamageTypeContext } from "./CallsParser.js";
 import { DrainDamageTypeContext } from "./CallsParser.js";
@@ -31,41 +27,17 @@ export class CallsVisitor<Result> extends AbstractParseTreeVisitor<Result> {
      */
     visitDamageCall?: (ctx: DamageCallContext) => Result;
     /**
-     * Visit a parse tree produced by `CallsParser.effect`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    visitEffect?: (ctx: EffectContext) => Result;
-    /**
      * Visit a parse tree produced by `CallsParser.fullAuto`.
      * @param ctx the parse tree
      * @return the visitor result
      */
     visitFullAuto?: (ctx: FullAutoContext) => Result;
     /**
-     * Visit a parse tree produced by `CallsParser.powerWord`.
+     * Visit a parse tree produced by `CallsParser.effect`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitPowerWord?: (ctx: PowerWordContext) => Result;
-    /**
-     * Visit a parse tree produced by `CallsParser.powerLight`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    visitPowerLight?: (ctx: PowerLightContext) => Result;
-    /**
-     * Visit a parse tree produced by `CallsParser.target`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    visitTarget?: (ctx: TargetContext) => Result;
-    /**
-     * Visit a parse tree produced by `CallsParser.basicEffect`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    visitBasicEffect?: (ctx: BasicEffectContext) => Result;
+    visitEffect?: (ctx: EffectContext) => Result;
     /**
      * Visit a parse tree produced by `CallsParser.number`.
      * @param ctx the parse tree

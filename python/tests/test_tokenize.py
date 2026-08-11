@@ -110,7 +110,7 @@ def test_canonical_words_agree_with_normalize(case: dict[str, Any]) -> None:
 
 @pytest.mark.parametrize(
     "raw",
-    ["", "   ", "-", "!", "Stun!", "power light", "full auto", "5 5 5 5 5"],
+    ["", "   ", "-", "!", "Stun!", "power word you stun", "full auto", "5 5 5 5 5"],
 )
 def test_tokenize_never_raises(raw: str) -> None:
     tokenize(raw)

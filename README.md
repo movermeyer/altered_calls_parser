@@ -7,7 +7,7 @@
 > belong to their respective owners.
 
 Parses, validates, normalizes, and autocompletes "damage calls" used in
-[Altered LARP](https://www.alteredlarp.com/) (e.g. `Knockdown 5 Fire`, `Power Word You Stun`), from a
+[Altered LARP](https://www.alteredlarp.com/) (e.g. `Knockdown 5 Fire`, `Overwhelm Full Auto 3 Flesh`), from a
 single ANTLR4 grammar shared by a both a Python package and a TypeScript/JavaScript package.
 
 Based on the [version 3.2 rules](https://docs.google.com/document/d/1-WhH-Tlogm5gIzZnr2T3OYtau2sRdrpZROQMOvQcH18/edit?usp=sharing). See the top of [the grammar file](grammar/Calls.g4) for the assumptions and differences used in this parser.

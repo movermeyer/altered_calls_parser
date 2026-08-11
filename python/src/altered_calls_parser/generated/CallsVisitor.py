@@ -13,33 +13,13 @@ class CallsVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by CallsParser#effect.
-    def visitEffect(self, ctx:CallsParser.EffectContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by CallsParser#fullAuto.
     def visitFullAuto(self, ctx:CallsParser.FullAutoContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by CallsParser#powerWord.
-    def visitPowerWord(self, ctx:CallsParser.PowerWordContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by CallsParser#powerLight.
-    def visitPowerLight(self, ctx:CallsParser.PowerLightContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by CallsParser#target.
-    def visitTarget(self, ctx:CallsParser.TargetContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by CallsParser#basicEffect.
-    def visitBasicEffect(self, ctx:CallsParser.BasicEffectContext):
+    # Visit a parse tree produced by CallsParser#effect.
+    def visitEffect(self, ctx:CallsParser.EffectContext):
         return self.visitChildren(ctx)
 
 

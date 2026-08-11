@@ -3,17 +3,13 @@ import type { ParserRuleContext } from "antlr4ng";
 import { CallsLexer } from "./generated/CallsLexer.js";
 import tokens from "./generated/canonical-tokens.json" with { type: "json" };
 import {
-  type BasicEffectContext,
   type DamageCallContext,
   type DamageTypeContext,
   type DrainDamageTypeContext,
   type EffectContext,
   type ElementalContext,
   type FullAutoContext,
-  type PowerLightContext,
-  type PowerWordContext,
   type ResourceContext,
-  type TargetContext,
 } from "./generated/CallsParser.js";
 import { CallsVisitor } from "./generated/CallsVisitor.js";
 
@@ -88,41 +84,6 @@ export class Canonicalizer extends CallsVisitor<void> {
   };
 
   public visitEffect = (ctx: EffectContext): void => {
-    const powerWord = ctx.powerWord();
-    const powerLight = ctx.powerLight();
-    const basicEffect = ctx.basicEffect();
-    if (powerWord) {
-      this.visitPowerWord(powerWord);
-    } else if (powerLight) {
-      this.visitPowerLight(powerLight);
-    } else if (basicEffect) {
-      this.visitBasicEffect(basicEffect);
-    }
-  };
-
-  public visitPowerWord = (ctx: PowerWordContext): void => {
-    this.words.push(WORDS.POWER, WORDS.WORD_KW);
-    const target = ctx.target();
-    if (target) {
-      this.visitTarget(target);
-    }
-    this.visitBasicEffect(ctx.basicEffect());
-  };
-
-  public visitPowerLight = (ctx: PowerLightContext): void => {
-    this.words.push(WORDS.POWER, WORDS.LIGHT);
-    const target = ctx.target();
-    if (target) {
-      this.visitTarget(target);
-    }
-    this.visitBasicEffect(ctx.basicEffect());
-  };
-
-  public visitTarget = (ctx: TargetContext): void => {
-    this.words.push(leafWord(ctx));
-  };
-
-  public visitBasicEffect = (ctx: BasicEffectContext): void => {
     // "Overwhelm" is an optional prefix on the effect keyword, so the keyword
     // itself is the rule's last token rather than its first.
     if (ctx.OVERWHELM()) {

@@ -38,9 +38,9 @@ class Opt:
 
 Node = Lit | NumberSlot | Seq | Alt | Opt
 
-# "Overwhelm" prefixes the effect keyword itself, so it rides along wherever
-# a basic effect can appear -- including inside a power word / power light.
-BASIC_EFFECT = Seq(
+# "Overwhelm" prefixes the effect keyword itself, so it lives inside this rule
+# rather than beside it in DAMAGE_CALL.
+EFFECT = Seq(
     (
         Opt(Lit("OVERWHELM")),
         Alt(
@@ -65,16 +65,9 @@ BASIC_EFFECT = Seq(
     )
 )
 
-# "Full Auto" sits beside `effect` rather than inside it -- it can't appear in
-# a power word / power light, and it carries the number it requires.
+# "Full Auto" sits beside `effect` rather than inside it -- unlike every other
+# effect it must state a number, and it carries the number it requires.
 FULL_AUTO = Seq((Opt(Lit("OVERWHELM")), Lit("FULL"), Lit("AUTO"), NumberSlot()))
-
-TARGET = Alt((Lit("YOU"), Lit("NPCS")))
-
-POWER_WORD = Seq((Lit("POWER"), Lit("WORD_KW"), Opt(TARGET), BASIC_EFFECT))
-POWER_LIGHT = Seq((Lit("POWER"), Lit("LIGHT"), Opt(TARGET), BASIC_EFFECT))
-
-EFFECT = Alt((POWER_WORD, POWER_LIGHT, BASIC_EFFECT))
 
 RESOURCE = Alt((Lit("FLESH"), Lit("STAMINA"), Lit("FOCUS"), Lit("ARMOUR")))
 DRAIN_DAMAGE_TYPE = Seq((NumberSlot(), RESOURCE, Lit("DRAIN")))

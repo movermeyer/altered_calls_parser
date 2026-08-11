@@ -2,10 +2,11 @@
  * Labels each word of a call with the part of the syntax it belongs to.
  *
  * This is a parse-tree walk, not a lexer pass, because the lexer alone cannot
- * tell these apart: "Light" is an elemental damage type in "Stun Light" but
- * half of the power call in "Power Light Stun", and of the two numbers in
- * "Knockdown 5 3 Flesh Drain" the first is the damage amount while the second
- * belongs to the drain. Only the rule a terminal sits under decides which.
+ * tell these apart: of the two numbers in "Knockdown 5 3 Flesh Drain" the first
+ * is the damage amount while the second belongs to the drain, and of the two
+ * "Flesh"es in "5 Flesh 3 Flesh Drain" the first is a damage type while the
+ * second is the resource being drained. Only the rule a terminal sits under
+ * decides which.
  *
  * The player-facing wording lives in shared/canonical-tokens.json alongside
  * every other player-visible string, so both language implementations say the
@@ -17,7 +18,6 @@ import { Token, type CommonTokenStream } from "antlr4ng";
 import { CallsLexer } from "./generated/CallsLexer.js";
 import tokens from "./generated/canonical-tokens.json" with { type: "json" };
 import {
-  type BasicEffectContext,
   type DamageCallContext,
   type DamageTypeContext,
   type DrainDamageTypeContext,
@@ -25,10 +25,7 @@ import {
   type ElementalContext,
   type FullAutoContext,
   type NumberContext,
-  type PowerLightContext,
-  type PowerWordContext,
   type ResourceContext,
-  type TargetContext,
 } from "./generated/CallsParser.js";
 import { CallsVisitor } from "./generated/CallsVisitor.js";
 
@@ -39,9 +36,6 @@ const ROLE_DESCRIPTIONS: Record<string, string> = tokens.roleDescriptions;
 
 export type CallTokenRole =
   | "overwhelm"
-  | "power-word"
-  | "power-light"
-  | "target"
   | "effect"
   | "full-auto"
   | "amount"
@@ -115,13 +109,13 @@ function isRealToken(token: Token | null | undefined): token is Token {
  * Re-types a generated accessor's result as nullable, which it genuinely is.
  *
  * The generated contexts declare their *required* children non-null and reach
- * that type with a `!` assertion -- `getRuleContext(0, BasicEffectContext)!`.
- * That assertion only holds for a tree that parsed. After error recovery a
- * required child can be missing outright: "power light" builds a
- * PowerLightContext whose basicEffect() is null at runtime despite its type.
- * Canonicalizer never meets this because normalize() throws before it walks an
- * invalid tree, but tokenize() promises not to throw, so every required child
- * has to be checked here.
+ * that type with a `!` assertion -- `getRuleContext(0, NumberContext)!`. That
+ * assertion only holds for a tree that parsed. After error recovery a required
+ * child can be missing outright: "full" builds a FullAutoContext whose AUTO()
+ * and number() are both null at runtime despite their types. Canonicalizer
+ * never meets this because normalize() throws before it walks an invalid tree,
+ * but tokenize() promises not to throw, so every required child has to be
+ * checked here.
  */
 function maybe<T>(value: T): T | null {
   return value ?? null;
@@ -179,47 +173,6 @@ class Tokenizer extends CallsVisitor<void> {
   };
 
   public visitEffect = (ctx: EffectContext): void => {
-    const powerWord = ctx.powerWord();
-    const powerLight = ctx.powerLight();
-    const basicEffect = ctx.basicEffect();
-    if (powerWord) {
-      this.visitPowerWord(powerWord);
-    } else if (powerLight) {
-      this.visitPowerLight(powerLight);
-    } else if (basicEffect) {
-      this.visitBasicEffect(basicEffect);
-    }
-  };
-
-  public visitPowerWord = (ctx: PowerWordContext): void => {
-    this.push(maybe(ctx.POWER())?.symbol, "power-word");
-    this.push(maybe(ctx.WORD_KW())?.symbol, "power-word");
-    this.visitPowerTail(ctx.target(), maybe(ctx.basicEffect()));
-  };
-
-  public visitPowerLight = (ctx: PowerLightContext): void => {
-    this.push(maybe(ctx.POWER())?.symbol, "power-light");
-    // The one label the lexer could never get right on its own: "Light" is an
-    // elemental damage type everywhere else in the grammar.
-    this.push(maybe(ctx.LIGHT())?.symbol, "power-light");
-    this.visitPowerTail(ctx.target(), maybe(ctx.basicEffect()));
-  };
-
-  /** Power Word and Power Light take the same optional target then effect. */
-  private visitPowerTail(target: TargetContext | null, basicEffect: BasicEffectContext | null): void {
-    if (target) {
-      this.visitTarget(target);
-    }
-    if (basicEffect) {
-      this.visitBasicEffect(basicEffect);
-    }
-  }
-
-  public visitTarget = (ctx: TargetContext): void => {
-    this.push(ctx.start, "target");
-  };
-
-  public visitBasicEffect = (ctx: BasicEffectContext): void => {
     // "Overwhelm" is an optional prefix on the effect keyword, so the keyword
     // itself is the rule's last token rather than its first.
     this.push(ctx.OVERWHELM()?.symbol, "overwhelm");

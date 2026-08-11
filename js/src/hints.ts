@@ -88,7 +88,7 @@ function joinOr(parts: string[]): string {
 
 /**
  * Describe `allowed` as a noun phrase, e.g. `"drain"` or
- * `"you", "npcs" or an effect (like "stun")`. Small sets are listed verbatim;
+ * `"Overwhelm", an effect (like "Stun") or a number`. Small sets are listed verbatim;
  * larger ones collapse to category names so the player never faces the
  * 30-item token dump ANTLR would have produced.
  */

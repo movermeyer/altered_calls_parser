@@ -113,7 +113,7 @@ describe("tokenize never throws", () => {
     expect(() => tokenize(c.raw)).not.toThrow();
   });
 
-  test.each(["", "   ", "-", "!", "Stun!", "power light", "full auto", "5 5 5 5 5"])(
+  test.each(["", "   ", "-", "!", "Stun!", "power word you stun", "full auto", "5 5 5 5 5"])(
     "%j",
     (raw) => {
       expect(() => tokenize(raw)).not.toThrow();

@@ -14,8 +14,9 @@ grammar Calls;
 // * The rulebook does not provide a definitive list of all elemental damage types
 // * The rulebook list "Radiation" as an elemental damage type (_§8.3: Damage Types_)
 //   * We've extended the grammar to also accept "Rad", which is the term used in-game
-// * Power Word and Power Light can have arbitrary descriptions for their targets
-//   * We've limited the grammar to only support "You" and "NPCs"
+// * Power Word and Power Light are not Damage Calls
+//   * They're their own kind of call, which delivers an effect without dealing
+//     damage, so they're out of scope for this grammar
 // * The rulebook doesn't mention the ability to Drain Armour as a resource
 //   * We extended the Drain Damage Type syntax to support Armour as a valid resource.
 //
@@ -29,41 +30,23 @@ damageCall
     : (fullAuto | effect? number?) damageType? damageType? EOF
     ;
 
-effect
-    : powerWord | powerLight | basicEffect
-    ;
-
-// "Full Auto" is an effect like any other in the rulebook, but it only happens
-// while firing a gun -- so it can't appear inside a Power Word / Power Light --
-// and its call form is "Full Auto [item damage]", so unlike every other effect
-// it must state a number. It therefore sits beside `effect` rather than inside
-// it, and carries the number it requires. Keeping that number here rather than
-// writing `fullAuto number` in damageCall also leaves damageCall's own `number`
+// "Full Auto" is an effect like any other in the rulebook, but its call form is
+// "Full Auto [item damage]", so unlike every other effect it must state a
+// number. It therefore sits beside `effect` rather than inside it, and carries
+// the number it requires. Keeping that number here rather than writing
+// `fullAuto number` in damageCall also leaves damageCall's own `number`
 // reference singular, so the generated context keeps its `number()` accessor.
 // "Overwhelm" can still prefix it, and must come first when it does.
 fullAuto
     : OVERWHELM? FULL AUTO number
     ;
 
-powerWord
-    : POWER WORD_KW target? basicEffect
-    ;
-
-powerLight
-    : POWER LIGHT target? basicEffect
-    ;
-
-target
-    : YOU
-    | NPCS
-    ;
-
-// "Overwhelm" modifies the basic effect keyword itself, so it rides along
-// wherever a basic effect can appear. The optional
+// "Overwhelm" modifies the effect keyword itself, so it lives inside this rule
+// rather than beside it in damageCall. The optional
 // keyword sits outside the alternation group -- writing
 // `OVERWHELM? BREAK | CHARM | ...` instead would bind OVERWHELM to only the
 // first alternative.
-basicEffect
+effect
     : OVERWHELM? (BREAK | CHARM | COMMAND | DAZE | DEATH | DISARM | FEAR
     | KNOCKDOWN | KNOCKOUT | MAIM | PIN | RAGE | SLAM | SLAY | STUN)
     ;
@@ -108,11 +91,6 @@ elemental
 OVERWHELM : 'OVERWHELM';
 FULL      : 'FULL';
 AUTO      : 'AUTO';
-POWER     : 'POWER';
-WORD_KW   : 'WORD';
-LIGHT     : 'LIGHT';
-YOU       : 'YOU';
-NPCS      : 'NPCS';
 
 BREAK     : 'BREAK';
 CHARM     : 'CHARM';
@@ -138,6 +116,7 @@ STAMINA   : 'STAMINA';
 
 FIRE      : 'FIRE';
 DARK      : 'DARK';
+LIGHT     : 'LIGHT';
 POISON    : 'POISON';
 // RAD and RADIATION are separate keywords rather than spellings of one
 // token: maximal munch means "RADIATION" matches RADIATION rather than

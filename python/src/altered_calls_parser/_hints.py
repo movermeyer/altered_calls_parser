@@ -89,7 +89,7 @@ def _join_or(parts: list[str]) -> str:
 
 def describe_allowed(allowed: _Allowed) -> str:
     """Describe `allowed` as a noun phrase, e.g. `"drain"` or
-    `"you", "npcs" or an effect (like "stun")`.
+    `"Overwhelm", an effect (like "Stun") or a number`.
 
     Small sets are listed verbatim; larger ones collapse to category names so
     the player never faces the 30-item token dump ANTLR would have produced.
