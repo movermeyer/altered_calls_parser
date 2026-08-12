@@ -83,12 +83,6 @@
         <p id="hint-text" class="hint-text"></p>
         <div id="hint-fixes" class="hint-fixes" hidden></div>
       </div>
-      <button type="button" id="normalized-output" class="normalized-output" title="Copy to clipboard" hidden>
-        <code id="normalized-text"></code>
-        <span id="copy-label" class="copy-label">Copy</span>
-      </button>
-      <!-- Screen readers get the copy confirmation the flash of text conveys visually. -->
-      <span id="copy-status" class="visually-hidden" role="status" aria-live="polite"></span>
       <!--
           What each word of the call is doing. Shown only for a call that
           parses: an invalid one is already answered by the hint above and the
@@ -106,6 +100,13 @@
           -->
         <p id="breakdown-row" class="breakdown-row"></p>
       </div>
+      <br />
+      <button type="button" id="normalized-output" class="normalized-output" title="Copy to clipboard" hidden>
+        <code id="normalized-text"></code>
+        <span id="copy-label" class="copy-label">Copy</span>
+      </button>
+      <!-- Screen readers get the copy confirmation the flash of text conveys visually. -->
+      <span id="copy-status" class="visually-hidden" role="status" aria-live="polite"></span>
     </section>
 
     <!--
