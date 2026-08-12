@@ -41,8 +41,11 @@ class CallToken:
     #: by definition not part of a call the canonicalizer would accept.
     canonical: str
     #: Which part of the syntax this word is, given where it sits in the call.
-    #: One of "overwhelm", "effect", "full-auto", "amount", "damage-type",
-    #: "drain-amount", "drain-resource", "drain", "unknown".
+    #: One of "overwhelm", one of the fifteen effect keywords lowercased
+    #: ("break", "charm", "command", "daze", "death", "disarm", "fear",
+    #: "knockdown", "knockout", "maim", "pin", "rage", "slam", "slay", "stun"),
+    #: "full-auto", "amount", "damage-type", "drain-amount", "drain-resource",
+    #: "drain", "unknown".
     role: str
     #: Coarse grouping for colour-coding: one of `categoryOrder`, or "unknown".
     #: Several roles share a category -- a drain's amount and a call's damage
@@ -131,7 +134,13 @@ class _Tokenizer(CallsVisitor):
         # "Overwhelm" is an optional prefix on the effect keyword, so the
         # keyword itself is the rule's last token rather than its first.
         self._push(_symbol(ctx.OVERWHELM()), "overwhelm")
-        self._push(ctx.stop, "effect")
+        # Each of the fifteen effect keywords gets its own role -- the lexer's
+        # symbolic name lowercased -- so the tokenizer can hand back a
+        # rulebook-accurate description per effect instead of one generic blurb.
+        stop = ctx.stop
+        if _is_real_token(stop):
+            assert stop is not None
+            self._push(stop, token_name(stop.type).lower())
 
     def visitDamageType(self, ctx: CallsParser.DamageTypeContext) -> None:
         drain = ctx.drainDamageType()

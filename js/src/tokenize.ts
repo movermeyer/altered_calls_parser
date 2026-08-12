@@ -34,9 +34,27 @@ const ROLE_CATEGORIES: Record<string, string> = tokens.roleCategories;
 const ROLE_LABELS: Record<string, string> = tokens.roleLabels;
 const ROLE_DESCRIPTIONS: Record<string, string> = tokens.roleDescriptions;
 
+/** Each of the fifteen keywords the `effect` grammar rule accepts, lowercased. */
+export type EffectRole =
+  | "break"
+  | "charm"
+  | "command"
+  | "daze"
+  | "death"
+  | "disarm"
+  | "fear"
+  | "knockdown"
+  | "knockout"
+  | "maim"
+  | "pin"
+  | "rage"
+  | "slam"
+  | "slay"
+  | "stun";
+
 export type CallTokenRole =
   | "overwhelm"
-  | "effect"
+  | EffectRole
   | "full-auto"
   | "amount"
   | "damage-type"
@@ -176,7 +194,13 @@ class Tokenizer extends CallsVisitor<void> {
     // "Overwhelm" is an optional prefix on the effect keyword, so the keyword
     // itself is the rule's last token rather than its first.
     this.push(ctx.OVERWHELM()?.symbol, "overwhelm");
-    this.push(ctx.stop, "effect");
+    // Each of the fifteen effect keywords gets its own role -- the lexer's
+    // symbolic name lowercased -- so the tokenizer can hand back a
+    // rulebook-accurate description per effect instead of one generic blurb.
+    const stop = ctx.stop;
+    if (isRealToken(stop)) {
+      this.push(stop, tokenName(stop.type).toLowerCase() as EffectRole);
+    }
   };
 
   public visitDamageType = (ctx: DamageTypeContext): void => {
