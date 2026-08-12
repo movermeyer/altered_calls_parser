@@ -3,15 +3,14 @@ grammar Calls;
 // ======
 // Assumptions and differences from the rulebook (v3.2)
 //
-// * "A weapon can only have two Damage Types" (_§Damage Type Limit_)
-//   * This doesn't preclude other damage calls (Spells, etc.) from having more.
-//   * We've limited the grammar to only support two Damage Types
 // * "A damage call can only have one effect added to it. Some item tags allow
 //   you to make a damage call with multiple effects attached to it." (_§Effect Limit_)
 //   * The rulebook doesn't define what the structure of that call would look like
 //   * We've limited the grammar to only support a single Effect (except for
 //     "Overwhelm", which is technically an Effect)
 // * The rulebook does not provide a definitive list of all elemental damage types
+//   * We assume that the list in the rulebook is complete, instead of allowing unknown
+//     words to be elemental damage types
 // * The rulebook list "Radiation" as an elemental damage type (_§8.3: Damage Types_)
 //   * We've extended the grammar to also accept "Rad", which is the term used in-game
 // * Power Word and Power Light are not Damage Calls
@@ -21,13 +20,11 @@ grammar Calls;
 //   * We extended the Drain Damage Type syntax to support Armour as a valid resource.
 // * The rulebook lists several Defense names but that list is not exhaustive
 //   (_§8.4: Defensive Calls_)
-//   * We accept any word as a Defense name, so a name we haven't heard of
+//   * We accept any words as a Defense name, so a name we haven't heard of
 //     still parses. The Defense names mentioned in the rulebook are
 //     explicitly added, so autocomplete can offer them.
 //   * The cost is that a typo in a known name ("Mitigate Sturdyy") is a valid
 //     call rather than a misspelling we can point at
-//   * Which of those words go together to make one name ("Receding Tide") is
-//     not in this grammar either -- see the note on `defenseName`
 // * The rulebook prints Mitigate calls with both a comma ("Mitigate, [Defense Name]")
 //   and with a colon ("Mitigate: [Defense Name]")
 //   * We accept both commas (and colons) as separators, and treat them as if they were spaces

@@ -314,7 +314,7 @@ function renderResults(text: string): void {
 
   const isValid = validate(text);
   validBadge.hidden = false;
-  validBadge.textContent = isValid ? "Syntactically valid call" : "Not a call yet";
+  validBadge.textContent = isValid ? "Syntactically valid" : "Not a valid call";
   validBadge.className = `badge ${isValid ? "valid" : "invalid"}`;
 
   if (isValid) {
