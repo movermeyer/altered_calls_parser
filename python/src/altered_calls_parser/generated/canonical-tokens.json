@@ -115,20 +115,23 @@
     "STURDY": "defense-name",
     "SUNKISSED": "defense-name"
   },
-  "defenseNameWords": [
-    "BALANCED",
-    "DEFENSE",
-    "ETHEREAL",
-    "FERAL",
-    "FULL",
-    "INSPIRED",
-    "MIND",
-    "MORALE",
-    "RECEDING",
-    "REINFORCED",
-    "STURDY",
-    "SUNKISSED",
-    "TIDE"
+  "phrases": [
+    ["FULL", "AUTO"],
+    ["SHRUG", "OFF"],
+    ["PHASE", "OUT"],
+    ["PHASE", "IN"]
+  ],
+  "defenseNames": [
+    ["BALANCED"],
+    ["ETHEREAL"],
+    ["FERAL"],
+    ["FULL", "DEFENSE"],
+    ["INSPIRED"],
+    ["MORALE"],
+    ["RECEDING", "TIDE"],
+    ["REINFORCED", "MIND"],
+    ["STURDY"],
+    ["SUNKISSED"]
   ],
   "categoryOrder": [
     "modifier",

@@ -13,6 +13,7 @@ English is hard-coded against a role name here.
 """
 
 from dataclasses import dataclass
+from typing import TypeGuard
 
 from antlr4 import CommonTokenStream, ParserRuleContext, Token
 from antlr4.tree.Tree import ErrorNode, TerminalNode
@@ -36,13 +37,16 @@ class CallToken:
     #: Half-open range in the input, the same convention CallHint uses.
     start: int
     end: int
-    #: The input slice, in its original casing.
+    #: The input slice, in its original casing -- including whatever separator
+    #: the player put between the words of a multi-word call ("Shrug-Off").
     text: str
-    #: The canonical spelling normalize() would write for this word, or the
-    #: digits themselves for a number. Empty for an "unknown" token, which is
-    #: by definition not part of a call the canonicalizer would accept.
+    #: The canonical spelling normalize() would write here, or the digits
+    #: themselves for a number. Multi-word calls come back hyphen-joined
+    #: ("Full-Auto"), exactly as normalize() writes them. Empty for an "unknown"
+    #: token, which is by definition not part of a call the canonicalizer would
+    #: accept.
     canonical: str
-    #: Which part of the syntax this word is, given where it sits in the call.
+    #: Which part of the syntax this is, given where it sits in the call.
     #: One of "overwhelm", one of the fifteen effect keywords lowercased
     #: ("break", "charm", "command", "daze", "death", "disarm", "fear",
     #: "knockdown", "knockout", "maim", "pin", "rage", "slam", "slay", "stun"),
@@ -60,7 +64,20 @@ class CallToken:
     description: str
 
 
-def _is_real_token(token: Token | None) -> bool:
+@dataclass(frozen=True)
+class _Span:
+    """The terminals of one part of a call, before their input slice has been read.
+
+    Usually one token, but a call made of several words is one part: "Shrug" and
+    "Off" are a single `shrug-off`, and a Defense name is a single name however
+    many words the player used for it.
+    """
+
+    tokens: list[Token]
+    role: str
+
+
+def _is_real_token(token: Token | None) -> TypeGuard[Token]:
     """Whether `token` points at real input.
 
     On invalid input the parser's error recovery conjures tokens to stand in
@@ -122,9 +139,9 @@ class _Tokenizer(CallsVisitor):
 
     def __init__(self) -> None:
         super().__init__()
-        self.claimed: list[tuple[Token, str]] = []
+        self.claimed: list[_Span] = []
 
-    def collect(self, tree: CallTree | None) -> list[tuple[Token, str]]:
+    def collect(self, tree: CallTree | None) -> list[_Span]:
         self.claimed = []
         if isinstance(tree, CallsParser.DefensiveCallContext):
             self.visitDefensiveCall(tree)
@@ -132,17 +149,23 @@ class _Tokenizer(CallsVisitor):
             self.visitDamageCall(tree)
         return self.claimed
 
-    def _push(self, token: Token | None, role: str) -> None:
-        if _is_real_token(token):
-            assert token is not None
-            self.claimed.append((token, role))
+    def _push(self, candidates: list[Token | None], role: str) -> None:
+        """Claim `candidates` as one part of the call.
+
+        Anything the parser conjured during error recovery drops out, and a span
+        left with nothing real in it is not claimed at all -- so a half-typed
+        "full" claims the one word it has.
+        """
+        tokens = [token for token in candidates if _is_real_token(token)]
+        if tokens:
+            self.claimed.append(_Span(tokens=tokens, role=role))
 
     def _push_number(self, ctx: CallsParser.NumberContext | None, role: str) -> None:
         if ctx is not None:
-            self._push(_symbol(ctx.NUMBER()), role)
+            self._push([_symbol(ctx.NUMBER())], role)
 
     def _push_leaf(self, ctx: ParserRuleContext, role: str) -> None:
-        self._push(ctx.start, role)
+        self._push([ctx.start], role)
 
     def visitDamageCall(self, ctx: CallsParser.DamageCallContext) -> None:
         full_auto = ctx.fullAuto()
@@ -159,22 +182,22 @@ class _Tokenizer(CallsVisitor):
             self.visitDamageType(damage_type)
 
     def visitFullAuto(self, ctx: CallsParser.FullAutoContext) -> None:
-        self._push(_symbol(ctx.OVERWHELM()), "overwhelm")
-        self._push(_symbol(ctx.FULL()), "full-auto")
-        self._push(_symbol(ctx.AUTO()), "full-auto")
+        self._push([_symbol(ctx.OVERWHELM())], "overwhelm")
+        # Both words are one effect. The number stays its own part: it is what
+        # the player varies, not part of the call's name.
+        self._push([_symbol(ctx.FULL()), _symbol(ctx.AUTO())], "full-auto")
         self._push_number(ctx.number(), "amount")
 
     def visitEffect(self, ctx: CallsParser.EffectContext) -> None:
         # "Overwhelm" is an optional prefix on the effect keyword, so the
         # keyword itself is the rule's last token rather than its first.
-        self._push(_symbol(ctx.OVERWHELM()), "overwhelm")
+        self._push([_symbol(ctx.OVERWHELM())], "overwhelm")
         # Each of the fifteen effect keywords gets its own role -- the lexer's
         # symbolic name lowercased -- so the tokenizer can hand back a
         # rulebook-accurate description per effect instead of one generic blurb.
         stop = ctx.stop
         if _is_real_token(stop):
-            assert stop is not None
-            self._push(stop, token_name(stop.type).lower())
+            self._push([stop], token_name(stop.type).lower())
 
     def visitDamageType(self, ctx: CallsParser.DamageTypeContext) -> None:
         drain = ctx.drainDamageType()
@@ -198,16 +221,18 @@ class _Tokenizer(CallsVisitor):
         resource = ctx.resource()
         if resource is not None:
             self.visitResource(resource)
-        self._push(_symbol(ctx.DRAIN()), "drain")
+        self._push([_symbol(ctx.DRAIN())], "drain")
 
     def visitResource(self, ctx: CallsParser.ResourceContext) -> None:
         self._push_leaf(ctx, "drain-resource")
 
     def visitDefensiveCall(self, ctx: CallsParser.DefensiveCallContext) -> None:
         # Every one of the seven forms is a run of keywords optionally followed
-        # by a Defense name, and all the keywords of one form share its role --
-        # so this covers all seven without a branch per form.
+        # by a Defense name, and the keywords of one form are one call between
+        # them -- so this covers all seven without a branch per form, and "Shrug
+        # Off" and "Phase Out" come back whole.
         role = _defensive_role(ctx)
+        keywords: list[Token | None] = []
         for child in ctx.getChildren():
             if isinstance(child, CallsParser.DefenseNameContext):
                 self.visitDefenseName(child)
@@ -216,56 +241,65 @@ class _Tokenizer(CallsVisitor):
                 # rule was being matched when recovery kicked in -- so claiming
                 # them here would label the word that broke the call as part of
                 # it. Leaving them unclaimed sends them to "unknown" instead.
-                self._push(child.symbol, role)
+                keywords.append(child.symbol)
+        self._push(keywords, role)
 
     def visitDefenseName(self, ctx: CallsParser.DefenseNameContext) -> None:
-        for word in ctx.defenseWord():
-            self.visitDefenseWord(word)
+        """The whole name is one part of the call, however many words it took.
 
-    def visitDefenseWord(self, ctx: CallsParser.DefenseWordContext) -> None:
-        self._push_leaf(ctx, "defense-name")
+        This holds for names nobody here has heard of as well as the listed ones:
+        the grammar accepts any run of words, and a player who says "Mitigate
+        Angry Bear" has named one Defense, not two.
+        """
+        self._push([word.start for word in ctx.defenseWord()], "defense-name")
 
 
-def _unclaimed(
-    token_stream: CommonTokenStream, claimed: list[tuple[Token, str]]
-) -> list[tuple[Token, str]]:
+def _unclaimed(token_stream: CommonTokenStream, claimed: list[_Span]) -> list[_Span]:
     """Every real token the lexer produced that the parse tree did not claim.
 
     SEP is skipped rather than sent to a hidden channel, so separators never
     enter the stream at all and no channel filtering is needed here.
     """
-    claimed_starts = {token.start for token, _ in claimed}
+    claimed_starts = {token.start for span in claimed for token in span.tokens}
     return [
-        (token, "unknown")
+        _Span(tokens=[token], role="unknown")
         for token in token_stream.tokens
         if _is_real_token(token) and token.start not in claimed_starts
     ]
 
 
-def _to_call_token(text: str, token: Token, role: str) -> CallToken:
-    start = token.start
-    end = token.stop + 1
-    # Slice the original input rather than reading token.text, which reflects
-    # the upper-cased view CaseChangingCharStream gave the lexer to match
-    # against.
-    slice_ = text[start:end]
+def _canonical_word(text: str, token: Token) -> str:
+    """The canonical spelling of one word, as normalize() would write it."""
+    if token.type == CallsLexer.NUMBER:
+        return str(text[token.start : token.stop + 1])
+    if token.type == CallsLexer.IDENT:
+        # A Defense name the rulebook doesn't list -- the only place IDENT is
+        # part of a call at all. There is no canonical spelling on file for it,
+        # so it keeps the player's word, capitalized like the rest.
+        return title_case(text[token.start : token.stop + 1])
+    return WORDS[token_name(token.type)]
+
+
+def _to_call_token(text: str, span: _Span) -> CallToken:
+    role = span.role
+    start = span.tokens[0].start
+    end = span.tokens[-1].stop + 1
 
     canonical = ""
     if role != "unknown":
-        if token.type == CallsLexer.NUMBER:
-            canonical = slice_
-        elif token.type == CallsLexer.IDENT:
-            # A Defense name the rulebook doesn't list -- the only place IDENT
-            # is part of a call at all. There is no canonical spelling on file
-            # for it, so it keeps the player's word, capitalized like the rest.
-            canonical = title_case(slice_)
-        else:
-            canonical = WORDS[token_name(token.type)]
+        # Hyphen-joined, which is how normalize() joins words -- so a caller can
+        # still rebuild the canonical call by joining these with a hyphen,
+        # whether or not any of them turned out to be several words.
+        canonical = "-".join(_canonical_word(text, token) for token in span.tokens)
 
     return CallToken(
         start=start,
         end=end,
-        text=slice_,
+        # Slice the original input rather than reading token.text, which reflects
+        # the upper-cased view CaseChangingCharStream gave the lexer to match
+        # against. Slicing the whole span at once also keeps the separator the
+        # player typed between the words of a multi-word call.
+        text=text[start:end],
         canonical=canonical,
         role=role,
         category=ROLE_CATEGORIES[role],
@@ -279,7 +313,11 @@ def tokenize_tree(
     tree: CallTree | None,
     token_stream: CommonTokenStream,
 ) -> list[CallToken]:
-    """Label each word of `text` with the part of the syntax it belongs to.
+    """Label each part of `text` with the part of the syntax it belongs to.
+
+    One token per *part* of the call rather than per word: a call made of several
+    words ("Shrug Off", "Full Auto") comes back as one token covering all of
+    them, as does a Defense name however many words it took.
 
     Takes the tree and token stream rather than parsing for itself so that the
     public tokenize() in __init__.py can build them the same way parse() does,
@@ -297,6 +335,6 @@ def tokenize_tree(
     tokens back out must take the gaps between them from the original text.
     """
     claimed = _Tokenizer().collect(tree)
-    merged = claimed + _unclaimed(token_stream, claimed)
-    merged.sort(key=lambda pair: pair[0].start)
-    return [_to_call_token(text, token, role) for token, role in merged]
+    spans = claimed + _unclaimed(token_stream, claimed)
+    spans.sort(key=lambda span: span.tokens[0].start)
+    return [_to_call_token(text, span) for span in spans]

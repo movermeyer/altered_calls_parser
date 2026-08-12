@@ -7,11 +7,11 @@
     "expectedNumberSlot": true,
     "expectedKeywordLabels": [
       "Auric", "Break", "Charm", "Command", "Dark", "Daze", "Death",
-      "Deep", "Disarm", "Fae", "Fear", "Fire", "Flesh", "Focus", "Full",
+      "Deep", "Disarm", "Fae", "Fear", "Fire", "Flesh", "Focus", "Full Auto",
       "Heal", "Ice", "Knockdown", "Knockout", "Light", "Maim", "Mitigate",
-      "Overwhelm", "Parry", "Phase", "Pin", "Poison", "Rad", "Radiation",
-      "Rage", "Repair", "Sacrifice", "Shrug", "Slam", "Slay", "Stamina",
-      "Stun", "Withstand"
+      "Overwhelm", "Parry", "Phase In", "Phase Out", "Pin", "Poison", "Rad",
+      "Radiation", "Rage", "Repair", "Sacrifice", "Shrug Off", "Slam", "Slay",
+      "Stamina", "Stun", "Withstand"
     ]
   },
   {
@@ -127,8 +127,20 @@
     "exhaustive": true,
     "expectedNumberSlot": false,
     "expectedKeywordLabels": [
-      "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear", "Full",
-      "Knockdown", "Knockout", "Maim", "Pin", "Rage", "Slam", "Slay", "Stun"
+      "Break", "Charm", "Command", "Daze", "Death", "Disarm", "Fear",
+      "Full Auto", "Knockdown", "Knockout", "Maim", "Pin", "Rage", "Slam",
+      "Slay", "Stun"
+    ]
+  },
+  {
+    "id": "partial-first-word-of-a-phrase",
+    "raw": "Ful",
+    "cursor": 3,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Full Auto"],
+    "expectedSuggestions": [
+      { "label": "Full Auto", "word": "Full", "category": "effect", "start": 0, "end": 3 }
     ]
   },
   {
@@ -137,7 +149,43 @@
     "cursor": 5,
     "exhaustive": true,
     "expectedNumberSlot": false,
-    "expectedKeywordLabels": ["Auto"]
+    "expectedKeywordLabels": ["Full Auto"],
+    "expectedSuggestions": [
+      { "label": "Full Auto", "word": "Auto", "category": "effect", "start": 0, "end": 5 }
+    ]
+  },
+  {
+    "id": "partial-second-word-of-a-phrase",
+    "raw": "Full A",
+    "cursor": 6,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Full Auto"],
+    "expectedSuggestions": [
+      { "label": "Full Auto", "word": "Auto", "category": "effect", "start": 0, "end": 6 }
+    ]
+  },
+  {
+    "id": "a-hyphen-mid-phrase-is-still-the-phrase",
+    "raw": "Full-A",
+    "cursor": 6,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Full Auto"],
+    "expectedSuggestions": [
+      { "label": "Full Auto", "word": "Auto", "category": "effect", "start": 0, "end": 6 }
+    ]
+  },
+  {
+    "id": "overwhelm-full-still-offers-the-whole-phrase",
+    "raw": "Overwhelm Full ",
+    "cursor": 15,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Full Auto"],
+    "expectedSuggestions": [
+      { "label": "Full Auto", "word": "Auto", "category": "effect", "start": 10, "end": 15 }
+    ]
   },
   {
     "id": "full-auto-needs-a-number",
@@ -173,9 +221,26 @@
     "exhaustive": true,
     "expectedNumberSlot": false,
     "expectedKeywordLabels": [
-      "Balanced", "Defense", "Ethereal", "Feral", "Full", "Inspired", "Mind",
-      "Morale", "Receding", "Reinforced", "Sturdy", "Sunkissed", "Tide"
+      "Balanced", "Ethereal", "Feral", "Full Defense", "Inspired", "Morale",
+      "Receding Tide", "Reinforced Mind", "Sturdy", "Sunkissed"
+    ],
+    "expectedSuggestions": [
+      {
+        "label": "Full Defense",
+        "word": "Full",
+        "category": "defense-name",
+        "start": 9,
+        "end": 9
+      }
     ]
+  },
+  {
+    "id": "a-word-that-only-appears-inside-a-name-is-not-offered-alone",
+    "raw": "Mitigate Ti",
+    "cursor": 11,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": []
   },
   {
     "id": "nothing-follows-sacrifice",
@@ -194,14 +259,58 @@
     "expectedKeywordLabels": ["Sturdy"]
   },
   {
+    "id": "partial-two-word-defense-name",
+    "raw": "Mitigate Recedin",
+    "cursor": 16,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Receding Tide"],
+    "expectedSuggestions": [
+      {
+        "label": "Receding Tide",
+        "word": "Receding",
+        "category": "defense-name",
+        "start": 9,
+        "end": 16
+      }
+    ]
+  },
+  {
+    "id": "two-word-defense-name-reaches-back-over-its-first-word",
+    "raw": "Mitigate Receding ",
+    "cursor": 18,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": [
+      "Balanced", "Ethereal", "Feral", "Full Defense", "Inspired", "Morale",
+      "Receding Tide", "Reinforced Mind", "Sturdy", "Sunkissed"
+    ],
+    "expectedSuggestions": [
+      {
+        "label": "Receding Tide",
+        "word": "Tide",
+        "category": "defense-name",
+        "start": 9,
+        "end": 18
+      },
+      {
+        "label": "Sturdy",
+        "word": "Sturdy",
+        "category": "defense-name",
+        "start": 18,
+        "end": 18
+      }
+    ]
+  },
+  {
     "id": "defense-name-can-run-on",
     "raw": "Mitigate Bulwark ",
     "cursor": 17,
     "exhaustive": true,
     "expectedNumberSlot": false,
     "expectedKeywordLabels": [
-      "Balanced", "Defense", "Ethereal", "Feral", "Full", "Inspired", "Mind",
-      "Morale", "Receding", "Reinforced", "Sturdy", "Sunkissed", "Tide"
+      "Balanced", "Ethereal", "Feral", "Full Defense", "Inspired", "Morale",
+      "Receding Tide", "Reinforced Mind", "Sturdy", "Sunkissed"
     ]
   },
   {
@@ -211,8 +320,8 @@
     "exhaustive": true,
     "expectedNumberSlot": false,
     "expectedKeywordLabels": [
-      "Balanced", "Defense", "Ethereal", "Feral", "Full", "Inspired", "Mind",
-      "Morale", "Receding", "Reinforced", "Sturdy", "Sunkissed", "Tide"
+      "Balanced", "Ethereal", "Feral", "Full Defense", "Inspired", "Morale",
+      "Receding Tide", "Reinforced Mind", "Sturdy", "Sunkissed"
     ]
   },
   {
@@ -229,7 +338,11 @@
     "cursor": 6,
     "exhaustive": true,
     "expectedNumberSlot": false,
-    "expectedKeywordLabels": ["In", "Out"]
+    "expectedKeywordLabels": ["Phase In", "Phase Out"],
+    "expectedSuggestions": [
+      { "label": "Phase In", "word": "In", "category": "defense", "start": 0, "end": 6 },
+      { "label": "Phase Out", "word": "Out", "category": "defense", "start": 0, "end": 6 }
+    ]
   },
   {
     "id": "shrug-needs-off",
@@ -237,6 +350,20 @@
     "cursor": 6,
     "exhaustive": true,
     "expectedNumberSlot": false,
-    "expectedKeywordLabels": ["Off"]
+    "expectedKeywordLabels": ["Shrug Off"],
+    "expectedSuggestions": [
+      { "label": "Shrug Off", "word": "Off", "category": "defense", "start": 0, "end": 6 }
+    ]
+  },
+  {
+    "id": "partial-second-word-of-shrug-off",
+    "raw": "Shrug O",
+    "cursor": 7,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Shrug Off"],
+    "expectedSuggestions": [
+      { "label": "Shrug Off", "word": "Off", "category": "defense", "start": 0, "end": 7 }
+    ]
   }
 ]

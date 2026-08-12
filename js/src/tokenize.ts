@@ -80,15 +80,20 @@ export interface CallToken {
   /** Half-open range in the input, the same convention CallHint uses. */
   start: number;
   end: number;
-  /** The input slice, in its original casing. */
+  /**
+   * The input slice, in its original casing -- including whatever separator the
+   * player put between the words of a multi-word call ("Shrug-Off").
+   */
   text: string;
   /**
-   * The canonical spelling normalize() would write for this word, or the
-   * digits themselves for a number. Empty for an "unknown" token, which is by
-   * definition not part of a call the canonicalizer would accept.
+   * The canonical spelling normalize() would write here, or the digits
+   * themselves for a number. Multi-word calls come back hyphen-joined
+   * ("Full-Auto"), exactly as normalize() writes them. Empty for an "unknown"
+   * token, which is by definition not part of a call the canonicalizer would
+   * accept.
    */
   canonical: string;
-  /** Which part of the syntax this word is, given where it sits in the call. */
+  /** Which part of the syntax this is, given where it sits in the call. */
   role: CallTokenRole;
   /**
    * Coarse grouping for colour-coding: one of `categoryOrder`, or "unknown".
@@ -102,9 +107,15 @@ export interface CallToken {
   description: string;
 }
 
-/** A terminal the tree claimed, before its input slice has been read. */
-interface ClaimedToken {
-  token: Token;
+/**
+ * The terminals of one part of a call, before their input slice has been read.
+ *
+ * Usually one token, but a call made of several words is one part: "Shrug" and
+ * "Off" are a single `shrug-off`, and a Defense name is a single name however
+ * many words the player used for it.
+ */
+interface ClaimedSpan {
+  tokens: Token[];
   role: CallTokenRole;
 }
 
@@ -191,9 +202,9 @@ function defensiveRole(ctx: DefensiveCallContext): CallTokenRole {
  * to be pinned to the token that actually carries it.
  */
 class Tokenizer extends CallsVisitor<void> {
-  private claimed: ClaimedToken[] = [];
+  private claimed: ClaimedSpan[] = [];
 
-  public collect(tree: CallTree | null): ClaimedToken[] {
+  public collect(tree: CallTree | null): ClaimedSpan[] {
     this.claimed = [];
     if (tree instanceof DefensiveCallContext) {
       this.visitDefensiveCall(tree);
@@ -203,9 +214,15 @@ class Tokenizer extends CallsVisitor<void> {
     return this.claimed;
   }
 
-  private push(token: Token | null | undefined, role: CallTokenRole): void {
-    if (isRealToken(token)) {
-      this.claimed.push({ token, role });
+  /**
+   * Claim `candidates` as one part of the call. Anything the parser conjured
+   * during error recovery drops out, and a span left with nothing real in it is
+   * not claimed at all -- so a half-typed "full" claims the one word it has.
+   */
+  private push(candidates: (Token | null | undefined)[], role: CallTokenRole): void {
+    const tokens = candidates.filter(isRealToken);
+    if (tokens.length > 0) {
+      this.claimed.push({ tokens, role });
     }
   }
 
@@ -228,26 +245,27 @@ class Tokenizer extends CallsVisitor<void> {
   };
 
   private pushNumber(ctx: NumberContext | null, role: CallTokenRole): void {
-    this.push(maybe(ctx?.NUMBER())?.symbol, role);
+    this.push([maybe(ctx?.NUMBER())?.symbol], role);
   }
 
   public visitFullAuto = (ctx: FullAutoContext): void => {
-    this.push(ctx.OVERWHELM()?.symbol, "overwhelm");
-    this.push(maybe(ctx.FULL())?.symbol, "full-auto");
-    this.push(maybe(ctx.AUTO())?.symbol, "full-auto");
+    this.push([ctx.OVERWHELM()?.symbol], "overwhelm");
+    // Both words are one effect. The number stays its own part: it is what the
+    // player varies, not part of the call's name.
+    this.push([maybe(ctx.FULL())?.symbol, maybe(ctx.AUTO())?.symbol], "full-auto");
     this.pushNumber(maybe(ctx.number()), "amount");
   };
 
   public visitEffect = (ctx: EffectContext): void => {
     // "Overwhelm" is an optional prefix on the effect keyword, so the keyword
     // itself is the rule's last token rather than its first.
-    this.push(ctx.OVERWHELM()?.symbol, "overwhelm");
+    this.push([ctx.OVERWHELM()?.symbol], "overwhelm");
     // Each of the fifteen effect keywords gets its own role -- the lexer's
     // symbolic name lowercased -- so the tokenizer can hand back a
     // rulebook-accurate description per effect instead of one generic blurb.
     const stop = ctx.stop;
     if (isRealToken(stop)) {
-      this.push(stop, tokenName(stop.type).toLowerCase() as EffectRole);
+      this.push([stop], tokenName(stop.type).toLowerCase() as EffectRole);
     }
   };
 
@@ -263,11 +281,11 @@ class Tokenizer extends CallsVisitor<void> {
       return;
     }
     // Bare FLESH/HEAL/REPAIR/FOCUS/STAMINA leaf.
-    this.push(ctx.start, "damage-type");
+    this.push([ctx.start], "damage-type");
   };
 
   public visitElemental = (ctx: ElementalContext): void => {
-    this.push(ctx.start, "damage-type");
+    this.push([ctx.start], "damage-type");
   };
 
   public visitDrainDamageType = (ctx: DrainDamageTypeContext): void => {
@@ -278,18 +296,20 @@ class Tokenizer extends CallsVisitor<void> {
     if (resource) {
       this.visitResource(resource);
     }
-    this.push(maybe(ctx.DRAIN())?.symbol, "drain");
+    this.push([maybe(ctx.DRAIN())?.symbol], "drain");
   };
 
   public visitResource = (ctx: ResourceContext): void => {
-    this.push(ctx.start, "drain-resource");
+    this.push([ctx.start], "drain-resource");
   };
 
   public visitDefensiveCall = (ctx: DefensiveCallContext): void => {
     // Every one of the seven forms is a run of keywords optionally followed by
-    // a Defense name, and all the keywords of one form share its role -- so
-    // this covers all seven without a branch per form.
+    // a Defense name, and the keywords of one form are one call between them --
+    // so this covers all seven without a branch per form, and "Shrug Off" and
+    // "Phase Out" come back whole.
     const role = defensiveRole(ctx);
+    const keywords: Token[] = [];
     for (const child of ctx.children) {
       if (child instanceof DefenseNameContext) {
         this.visitDefenseName(child);
@@ -298,19 +318,24 @@ class Tokenizer extends CallsVisitor<void> {
         // was being matched when recovery kicked in -- so claiming them here
         // would label the word that broke the call as part of it. Leaving them
         // unclaimed sends them to "unknown" instead.
-        this.push(child.symbol, role);
+        keywords.push(child.symbol);
       }
     }
+    this.push(keywords, role);
   };
 
+  /**
+   * The whole name is one part of the call, however many words it took.
+   *
+   * This holds for names nobody here has heard of as well as the listed ones:
+   * the grammar accepts any run of words, and a player who says "Mitigate Angry
+   * Bear" has named one Defense, not two.
+   */
   public visitDefenseName = (ctx: DefenseNameContext): void => {
-    for (const word of ctx.defenseWord()) {
-      this.visitDefenseWord(word);
-    }
-  };
-
-  public visitDefenseWord = (ctx: DefenseWordContext): void => {
-    this.push(ctx.start, "defense-name");
+    this.push(
+      ctx.defenseWord().map((word: DefenseWordContext) => word.start),
+      "defense-name",
+    );
   };
 }
 
@@ -319,40 +344,45 @@ class Tokenizer extends CallsVisitor<void> {
  * rejected. SEP is skipped rather than sent to a hidden channel, so separators
  * never enter the stream at all and no channel filtering is needed here.
  */
-function unclaimedTokens(stream: CommonTokenStream, claimed: ClaimedToken[]): ClaimedToken[] {
-  const claimedStarts = new Set(claimed.map((c) => c.token.start));
+function unclaimedTokens(stream: CommonTokenStream, claimed: ClaimedSpan[]): ClaimedSpan[] {
+  const claimedStarts = new Set(claimed.flatMap((c) => c.tokens.map((token) => token.start)));
   return stream
     .getTokens()
     .filter((token) => isRealToken(token) && !claimedStarts.has(token.start))
-    .map((token) => ({ token, role: "unknown" as const }));
+    .map((token) => ({ tokens: [token], role: "unknown" as const }));
 }
 
-function toCallToken(text: string, { token, role }: ClaimedToken): CallToken {
-  const start = token.start;
-  const end = token.stop + 1;
-  // Slice the original input rather than reading token.text, which reflects the
-  // upper-cased view CaseChangingCharStream gave the lexer to match against.
-  const slice = text.slice(start, end);
-
-  let canonical = "";
-  if (role !== "unknown") {
-    if (token.type === CallsLexer.NUMBER) {
-      canonical = slice;
-    } else if (token.type === CallsLexer.IDENT) {
-      // A Defense name the rulebook doesn't list -- the only place IDENT is
-      // part of a call at all. There is no canonical spelling on file for it,
-      // so it keeps the player's word, capitalized like the rest.
-      canonical = titleCase(slice);
-    } else {
-      canonical = WORDS[tokenName(token.type)];
-    }
+/** The canonical spelling of one word, as normalize() would write it. */
+function canonicalWord(text: string, token: Token): string {
+  if (token.type === CallsLexer.NUMBER) {
+    return text.slice(token.start, token.stop + 1);
   }
+  if (token.type === CallsLexer.IDENT) {
+    // A Defense name the rulebook doesn't list -- the only place IDENT is part
+    // of a call at all. There is no canonical spelling on file for it, so it
+    // keeps the player's word, capitalized like the rest.
+    return titleCase(text.slice(token.start, token.stop + 1));
+  }
+  return WORDS[tokenName(token.type)];
+}
+
+function toCallToken(text: string, { tokens, role }: ClaimedSpan): CallToken {
+  const start = tokens[0].start;
+  const end = tokens[tokens.length - 1].stop + 1;
 
   return {
     start,
     end,
-    text: slice,
-    canonical,
+    // Slice the original input rather than reading token.text, which reflects
+    // the upper-cased view CaseChangingCharStream gave the lexer to match
+    // against. Slicing the whole span at once also keeps the separator the
+    // player typed between the words of a multi-word call.
+    text: text.slice(start, end),
+    // Hyphen-joined, which is how normalize() joins words -- so a caller can
+    // still rebuild the canonical call by joining these with a hyphen,
+    // whether or not any of them turned out to be several words.
+    canonical:
+      role === "unknown" ? "" : tokens.map((token) => canonicalWord(text, token)).join("-"),
     role,
     category: ROLE_CATEGORIES[role],
     label: ROLE_LABELS[role],
@@ -361,7 +391,11 @@ function toCallToken(text: string, { token, role }: ClaimedToken): CallToken {
 }
 
 /**
- * Label each word of `text` with the part of the syntax it belongs to.
+ * Label each part of `text` with the part of the syntax it belongs to.
+ *
+ * One token per *part* of the call rather than per word: a call made of several
+ * words ("Shrug Off", "Full Auto") comes back as one token covering all of
+ * them, as does a Defense name however many words it took.
  *
  * Takes the tree and token stream rather than parsing for itself so that the
  * public tokenize() in index.ts can build them the same way parse() does, off
@@ -384,6 +418,6 @@ export function tokenizeTree(
 ): CallToken[] {
   const claimed = new Tokenizer().collect(tree);
   return [...claimed, ...unclaimedTokens(stream, claimed)]
-    .sort((a, b) => a.token.start - b.token.start)
+    .sort((a, b) => a.tokens[0].start - b.tokens[0].start)
     .map((c) => toCallToken(text, c));
 }

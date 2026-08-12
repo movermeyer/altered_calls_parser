@@ -9,14 +9,19 @@ with _TOKENS_PATH.open() as _f:
 
 WORDS: dict[str, str] = _TOKENS["words"]  # type: ignore[assignment]
 
-# The Defense names the rulebook does list, as canonical words. The grammar
-# accepts any word at all as a Defense name, so there is nothing in it left to
-# complete against -- _completion.py offers these on its behalf.
-DEFENSE_NAME_WORDS: list[str] = [
-    WORDS[name] for name in _TOKENS["defenseNameWords"]  # type: ignore[attr-defined]
-]
+# Runs of keywords that are one call between them, as token names: the grammar
+# joins these in a rule of its own, so `FULL AUTO` and `SHRUG OFF` are here but
+# `KNOCKDOWN` is not. _completion.py offers each whole.
+PHRASES: list[list[str]] = _TOKENS["phrases"]  # type: ignore[assignment]
 
-# Player-facing vocabulary used by _hints.py to describe what belongs where.
+# The Defense names the rulebook does list, as token names, one entry per name.
+# The grammar accepts any run of words at all as a Defense name and doesn't
+# require "Receding" to be followed by "Tide", so there is nothing in it left to
+# complete against -- _completion.py offers these on its behalf.
+DEFENSE_NAMES: list[list[str]] = _TOKENS["defenseNames"]  # type: ignore[assignment]
+
+# Player-facing vocabulary used by _completion.py to say which part of a call a
+# suggestion would be, and by _hints.py to group them.
 CATEGORIES: dict[str, str] = _TOKENS["categories"]  # type: ignore[assignment]
 CATEGORY_ORDER: list[str] = _TOKENS["categoryOrder"]  # type: ignore[assignment]
 CATEGORY_LABELS: dict[str, str] = _TOKENS["categoryLabels"]  # type: ignore[assignment]

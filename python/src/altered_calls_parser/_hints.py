@@ -13,18 +13,12 @@ from dataclasses import dataclass, field
 
 from ._completion import suggest
 from ._tokens import (
-    CATEGORIES,
     CATEGORY_EXAMPLES,
     CATEGORY_LABELS,
     CATEGORY_ORDER,
     NUMBER_WORDS,
     WORDS,
 )
-
-# Canonical word -> category, keyed by the word itself rather than its token name.
-_WORD_CATEGORY: dict[str, str] = {
-    word: CATEGORIES[name] for name, word in WORDS.items()
-}
 
 _ALL_WORDS: list[str] = sorted(WORDS.values())
 
@@ -50,14 +44,34 @@ class CallHint:
 class _Allowed:
     """What the grammar will accept at some caret position."""
 
+    #: The single words that may go here, in suggestion order, without repeats.
     words: list[str]
+    #: Each word's coarse category, parallel to `words`.
+    categories: list[str]
     number: bool
 
 
 def _allowed_at(text: str, cursor: int) -> _Allowed:
+    """What may go at `cursor`, as single words.
+
+    A hint names the next *word* rather than the whole call it might start: a
+    player who has typed "Shrug" wants to hear `Add "Off"`, not `Add "Shrug
+    Off"`. So this reads each suggestion's `word` and not its `label` -- and takes
+    the category from the suggestion too, since the same word can be an effect in
+    one position ("Full Auto") and a Defense name in another ("Full Defense").
+    """
     items = suggest(text, cursor)
+    words: list[str] = []
+    categories: list[str] = []
+    for s in items:
+        # "Phase In" and "Phase Out" are two calls but one next word.
+        if s.kind != "keyword" or s.word is None or s.word in words:
+            continue
+        words.append(s.word)
+        categories.append(s.category if s.category is not None else "unknown")
     return _Allowed(
-        words=[s.label for s in items if s.kind == "keyword" and s.label is not None],
+        words=words,
+        categories=categories,
         number=any(s.kind == "number" for s in items),
     )
 
@@ -109,7 +123,11 @@ def describe_allowed(allowed: _Allowed) -> str:
             if allowed.number:
                 parts.append(CATEGORY_LABELS["number"])
             continue
-        members = [w for w in allowed.words if _WORD_CATEGORY.get(w) == category]
+        members = [
+            w
+            for w, w_category in zip(allowed.words, allowed.categories, strict=True)
+            if w_category == category
+        ]
         if not members:
             continue
         # One or two words are shorter and more concrete named outright than

@@ -14,16 +14,10 @@ import { suggest } from "./completion.js";
 import tokens from "./generated/canonical-tokens.json" with { type: "json" };
 
 const WORDS: Record<string, string> = tokens.words;
-const CATEGORIES: Record<string, string> = tokens.categories;
 const CATEGORY_ORDER: string[] = tokens.categoryOrder;
 const CATEGORY_LABELS: Record<string, string> = tokens.categoryLabels;
 const CATEGORY_EXAMPLES: Record<string, string> = tokens.categoryExamples;
 const NUMBER_WORDS: Record<string, string> = tokens.numberWords;
-
-/** Canonical word -> category, keyed by the word itself rather than its token name. */
-const WORD_CATEGORY: Record<string, string> = Object.fromEntries(
-  Object.entries(WORDS).map(([name, word]) => [word, CATEGORIES[name]]),
-);
 
 const ALL_WORDS: string[] = Object.values(WORDS).sort();
 
@@ -52,14 +46,33 @@ export interface CallHint {
 
 /** What the grammar will accept at some caret position. */
 interface Allowed {
+  /** The single words that may go here, in suggestion order, without repeats. */
   words: string[];
+  /** Each word's coarse category, parallel to `words`. */
+  categories: string[];
   number: boolean;
 }
 
+/**
+ * A hint names the next *word* rather than the whole call it might start: a
+ * player who has typed "Shrug" wants to hear `Add "Off"`, not `Add "Shrug Off"`.
+ * So this reads each suggestion's `word` and not its `label` -- and takes the
+ * category from the suggestion too, since the same word can be an effect in one
+ * position ("Full Auto") and a Defense name in another ("Full Defense").
+ */
 function allowedAt(text: string, cursor: number): Allowed {
   const items = suggest(text, cursor);
+  const words: string[] = [];
+  const categories: string[] = [];
+  for (const s of items) {
+    // "Phase In" and "Phase Out" are two calls but one next word.
+    if (s.kind !== "keyword" || words.includes(s.word)) continue;
+    words.push(s.word);
+    categories.push(s.category);
+  }
   return {
-    words: items.flatMap((s) => (s.kind === "keyword" ? [s.label] : [])),
+    words,
+    categories,
     number: items.some((s) => s.kind === "number"),
   };
 }
@@ -107,7 +120,7 @@ export function describeAllowed(allowed: Allowed): string {
       if (allowed.number) parts.push(CATEGORY_LABELS["number"]);
       continue;
     }
-    const members = allowed.words.filter((w) => WORD_CATEGORY[w] === category);
+    const members = allowed.words.filter((_, i) => allowed.categories[i] === category);
     if (members.length === 0) continue;
     // One or two words are shorter and more concrete named outright than
     // described ("\"power\"" beats "a power call (like \"power\")").

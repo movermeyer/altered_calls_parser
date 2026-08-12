@@ -399,20 +399,23 @@ function moveActive(delta: number): void {
   [...suggestionsEl.children].forEach((el, i) => el.classList.toggle("active", i === activeIndex));
 }
 
+/**
+ * Put the accepted call in the box, in place of whatever the player had typed
+ * towards it.
+ *
+ * The range comes from the suggestion rather than being worked out here: a
+ * multi-word call reaches back over the words already typed, so a caret sitting
+ * in "Shrug O" is offered "Shrug Off" replacing both words -- and searching
+ * backwards for the nearest separator, as if a suggestion were always one word,
+ * would leave the first of them behind.
+ */
 function acceptSuggestion(index: number): void {
   const s = suggestions[index];
   if (!s || s.kind !== "keyword") return;
 
   const text = input.value;
-  const cursor = input.selectionStart ?? text.length;
-
-  let start = cursor;
-  while (start > 0 && !SEPARATORS.has(text[start - 1])) {
-    start--;
-  }
-
-  const newText = text.slice(0, start) + s.label + " " + text.slice(cursor);
-  const newCursor = start + s.label.length + 1;
+  const newText = text.slice(0, s.start) + s.label + " " + text.slice(s.end);
+  const newCursor = s.start + s.label.length + 1;
 
   input.value = newText;
   input.setSelectionRange(newCursor, newCursor);

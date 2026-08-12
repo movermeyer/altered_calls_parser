@@ -256,7 +256,7 @@
     "id": "incomplete-mitigate-needs-a-name",
     "raw": "Mitigate",
     "kind": "incomplete",
-    "text": "The call isn't finished yet. Add \"Full\" or a defense name (like \"Sturdy\").",
+    "text": "The call isn't finished yet. Add a defense name (like \"Sturdy\").",
     "offendingText": "",
     "start": 8,
     "end": 8
@@ -285,7 +285,7 @@
     "id": "number-is-not-a-defense-name",
     "raw": "Mitigate 5",
     "kind": "misplaced-word",
-    "text": "\"5\" can't go here. Here you can put \"Full\" or a defense name (like \"Sturdy\").",
+    "text": "\"5\" can't go here. Here you can put a defense name (like \"Sturdy\").",
     "offendingText": "5",
     "start": 9,
     "end": 10

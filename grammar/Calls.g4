@@ -26,6 +26,8 @@ grammar Calls;
 //     explicitly added, so autocomplete can offer them.
 //   * The cost is that a typo in a known name ("Mitigate Sturdyy") is a valid
 //     call rather than a misspelling we can point at
+//   * Which of those words go together to make one name ("Receding Tide") is
+//     not in this grammar either -- see the note on `defenseName`
 // * The rulebook prints Mitigate calls with both a comma ("Mitigate, [Defense Name]")
 //   and with a colon ("Mitigate: [Defense Name]")
 //   * We accept both commas (and colons) as separators, and treat them as if they were spaces
@@ -105,8 +107,10 @@ defensiveCall
 // not exhaustive.
 //
 // This rule deliberately doesn't encode which words go together: with an
-// open-ended list there is nothing to check a partial name against, so
-// "Receding" is not required to be followed by "Tide".
+// open-ended list there is nothing to check a partial name against.
+// Defense names mentioned in the rulebook are instead recorded in
+// `shared/canonical-tokens.json`, where it is metadata for offering a name whole
+// and highlighting it as one part, not a constraint on what parses.
 defenseName
     : defenseWord+
     ;
@@ -124,7 +128,7 @@ defenseName
 //
 // The known names still have their own lexer keywords rather than falling to
 // IDENT, so each keeps a canonical capitalization and can be offered as a
-// completion; the completion engines hold that list, since the grammar no
+// completion; shared/canonical-tokens.json holds that list, since the grammar no
 // longer needs it.
 defenseWord
     : ~NUMBER
@@ -195,9 +199,12 @@ SHRUG     : 'SHRUG';
 OFF       : 'OFF';
 WITHSTAND : 'WITHSTAND';
 
-// The Defense names the rulebook lists. "FULL" is not repeated here: it is
-// already a keyword for "Full Auto", and one token can only be declared once,
-// so "Full Defense" reuses it.
+// The words the Defense names the rulebook lists are made of, one keyword each
+// rather than one per name: the words are what this grammar matches, and which of
+// them pair up ("Reinforced Mind") is recorded outside it, in
+// shared/canonical-tokens.json. "FULL" is not repeated here: it is already a
+// keyword for "Full Auto", and one token can only be declared once, so "Full
+// Defense" reuses it.
 BALANCED  : 'BALANCED';
 ETHEREAL  : 'ETHEREAL';
 FERAL     : 'FERAL';

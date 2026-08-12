@@ -24,3 +24,19 @@ def test_suggest(case: dict[str, Any]) -> None:
             assert label in keyword_labels
 
     assert has_number is case.get("expectedNumberSlot", False)
+
+    # Where a case pins them, the whole suggestion: which word of a multi-word
+    # call the caret is on, and the range accepting it would rewrite.
+    actual = [
+        {
+            "label": r.label,
+            "word": r.word,
+            "category": r.category,
+            "start": r.start,
+            "end": r.end,
+        }
+        for r in results
+        if r.kind == "keyword"
+    ]
+    for expected in case.get("expectedSuggestions", []):
+        assert expected in actual

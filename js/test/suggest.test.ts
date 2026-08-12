@@ -1,7 +1,10 @@
 import { describe, expect, test } from "vitest";
 
-import { suggest } from "../src/completion.js";
 import cases from "../../tests/fixtures/completions.json" with { type: "json" };
+import { suggest, type KeywordSuggestion } from "../src/completion.js";
+
+/** What a fixture pins about one suggestion: everything but its `kind`. */
+type KeywordSuggestionFields = Omit<KeywordSuggestion, "kind">;
 
 describe("suggest", () => {
   test.each(cases)("$id", (c) => {
@@ -17,5 +20,13 @@ describe("suggest", () => {
       }
     }
     expect(hasNumber).toBe(c.expectedNumberSlot ?? false);
+
+    // Where a case pins them, the whole suggestion: which word of a multi-word
+    // call the caret is on, and the range accepting it would rewrite.
+    const pinned = (c as { expectedSuggestions?: KeywordSuggestionFields[] })
+      .expectedSuggestions;
+    for (const expected of pinned ?? []) {
+      expect(results).toContainEqual({ kind: "keyword", ...expected });
+    }
   });
 });
