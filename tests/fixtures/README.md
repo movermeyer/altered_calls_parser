@@ -1,9 +1,12 @@
 # Shared test fixtures
 
-These JSON files are the single source of truth for behavior that must be
+These files are the single source of truth for behavior that must be
 identical across the Python and JS/TS implementations. Both language test
 suites load these files directly (no per-language copies) so the two
 implementations can't silently drift apart.
+
+Every file here is hand-written **except `all-calls.txt`**, which is generated
+by `make enumerate` and documented last.
 
 ## `calls.json`
 
@@ -80,3 +83,34 @@ An array of objects:
 | `exhaustive`            | boolean, optional | when true, `expectedKeywordLabels` must be the *complete* set of keyword candidates |
 | `expectedNumberSlot`    | boolean, optional | whether a `{ kind: "number" }` suggestion must be present            |
 | `expectedSuggestions`   | object[], optional | whole suggestions that must be present, each pinning `label`, `word`, `category`, `start` and `end`. A subset check, independent of `exhaustive`: it is where a case pins which word of a multi-word call the caret is on, and the input range accepting it would rewrite |
+
+## `all-calls.txt`
+
+Every call the grammar accepts, one per line, sorted. Unlike the files above
+this one is **generated** — run `make enumerate` to rewrite it, and never edit
+it by hand. It is committed and diff-checked by `make ci`, exactly like the
+generated parsers, so a grammar change shows up in review as an explicit list
+of the calls it made legal or illegal.
+
+The grammar has two open slots — the damage number, and the Defense name
+(`defenseName : defenseWord+`, any run of words at all). Bind both and the
+language becomes finite: with `5` in every number slot, the ten Defense names
+the rulebook lists, and one name per call, it is **24,400 calls**.
+
+**The first line is empty.** Every part of a damage call is optional, so the
+empty call is a member of the language — see the `empty-input` case in
+`calls.json`. Tests must expect it rather than filter it out.
+
+The point of the file is that the two implementations reach it by genuinely
+different routes, so agreeing on it means something:
+
+| suite | how it enumerates | what it reads |
+|-------|-------------------|---------------|
+| Python | cross-product over the declarative mirror, plus an independent forward search through the completion engine | `_grammar_shape.py` |
+| JS | forward search asking `antlr4-c3` what may follow each prefix | the real ATN generated from `Calls.g4` |
+
+Python's two strategies both read the hand-synced mirror, so on their own they
+prove only that the mirror never invents a call the real parser rejects. The JS
+enumeration walks the real ATN, so it catches the other direction: a construct
+the grammar allows but the mirror has fallen behind on. Both suites asserting
+against this one file is what closes the loop.

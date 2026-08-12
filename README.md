@@ -104,6 +104,26 @@ make generate
 CI fails if the committed generated code doesn't match what
 regeneration produces, so always run this after touching the grammar.
 
+### Regenerating the list of every call
+
+`tests/fixtures/all-calls.txt` is every call the grammar accepts — 24,400 of
+them, once the damage number and the Defense name are bound to fixed values.
+It is generated and committed, like the parsers above:
+
+```sh
+make enumerate
+```
+
+Both test suites check themselves against it, by deliberately different
+routes: Python enumerates from the declarative grammar mirror it uses for
+autocomplete, JS from the real ATN via `antlr4-c3`. Agreeing on this file is
+how the mirror is kept honest in both directions — see
+[`tests/fixtures/README.md`](tests/fixtures/README.md).
+
+CI fails if the committed list doesn't match, so run this after touching the
+grammar too. The diff is the point: it shows exactly which calls a grammar
+change made legal or illegal.
+
 ### Running tests
 
 ```sh
