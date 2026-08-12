@@ -1,10 +1,13 @@
-import type { ParserRuleContext } from "antlr4ng";
+import { TerminalNode, type ParserRuleContext } from "antlr4ng";
 
 import { CallsLexer } from "./generated/CallsLexer.js";
 import tokens from "./generated/canonical-tokens.json" with { type: "json" };
 import {
+  DefenseNameContext,
+  DefensiveCallContext,
   type DamageCallContext,
   type DamageTypeContext,
+  type DefenseWordContext,
   type DrainDamageTypeContext,
   type EffectContext,
   type ElementalContext,
@@ -12,8 +15,22 @@ import {
   type ResourceContext,
 } from "./generated/CallsParser.js";
 import { CallsVisitor } from "./generated/CallsVisitor.js";
+import type { CallTree } from "./tree.js";
 
 const WORDS: Record<string, string> = tokens.words;
+
+/**
+ * Capitalize `word` the way the canonical spellings in WORDS are.
+ *
+ * Only IDENT needs this: every other token has its canonical spelling on file,
+ * but a Defense name the rulebook doesn't list has to borrow the player's own
+ * word. IDENT is `[A-Za-z]+`, so there is no locale or grapheme subtlety here
+ * -- which matters, because the Python mirror must agree character for
+ * character.
+ */
+export function titleCase(word: string): string {
+  return word.slice(0, 1).toUpperCase() + word.slice(1).toLowerCase();
+}
 
 function tokenName(tokenType: number): string {
   const name = CallsLexer.symbolicNames[tokenType];
@@ -40,18 +57,22 @@ function lastWord(ctx: ParserRuleContext): string {
 }
 
 /**
- * Walks a damageCall parse tree, emitting canonical capitalized,
- * hyphen-separated words in grammar order. Words always come out in the
- * order they were called: the two damage-type slots can hold any two damage
- * types (not just two elementals), and there is no rulebook order to sort
- * such a pair into, so "fire dark" and "dark fire" normalize apart.
+ * Walks a call parse tree, emitting canonical capitalized, hyphen-separated
+ * words in grammar order. Words always come out in the order they were called:
+ * the two damage-type slots can hold any two damage types (not just two
+ * elementals), and there is no rulebook order to sort such a pair into, so
+ * "fire dark" and "dark fire" normalize apart.
  */
 export class Canonicalizer extends CallsVisitor<void> {
   private words: string[] = [];
 
-  public canonicalize(tree: DamageCallContext): string {
+  public canonicalize(tree: CallTree): string {
     this.words = [];
-    this.visitDamageCall(tree);
+    if (tree instanceof DefensiveCallContext) {
+      this.visitDefensiveCall(tree);
+    } else {
+      this.visitDamageCall(tree);
+    }
     return this.words.join("-");
   }
 
@@ -121,5 +142,36 @@ export class Canonicalizer extends CallsVisitor<void> {
     this.words.push(ctx.number().NUMBER().getText());
     this.visitResource(ctx.resource());
     this.words.push(WORDS.DRAIN);
+  };
+
+  public visitDefensiveCall = (ctx: DefensiveCallContext): void => {
+    // Every one of §8.4's seven forms is a run of keywords optionally followed
+    // by a Defense name, so walking the children in order covers all of them
+    // without a branch per form.
+    for (const child of ctx.children) {
+      if (child instanceof DefenseNameContext) {
+        this.visitDefenseName(child);
+      } else if (child instanceof TerminalNode) {
+        this.words.push(WORDS[tokenName(child.symbol.type)]);
+      }
+    }
+  };
+
+  public visitDefenseName = (ctx: DefenseNameContext): void => {
+    for (const word of ctx.defenseWord()) {
+      this.visitDefenseWord(word);
+    }
+  };
+
+  public visitDefenseWord = (ctx: DefenseWordContext): void => {
+    // The rule matches any token but NUMBER, so the word is read off the token
+    // itself rather than through a generated accessor. A word the lexer didn't
+    // recognize has no canonical spelling on file -- that is what IDENT is --
+    // so it keeps the player's own word with our capitalization applied.
+    if (ctx.start?.type === CallsLexer.IDENT) {
+      this.words.push(titleCase(ctx.start.text ?? ""));
+      return;
+    }
+    this.words.push(leafWord(ctx));
   };
 }

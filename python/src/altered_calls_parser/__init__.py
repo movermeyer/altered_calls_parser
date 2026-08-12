@@ -15,6 +15,7 @@ from ._errors import CallParseError, CallSyntaxError, CollectingErrorListener
 from ._hints import CallHint
 from ._tokenize import CallToken
 from ._tokenize import tokenize_tree as _tokenize_tree
+from ._tree import CallTree
 from .generated.CallsLexer import CallsLexer
 from .generated.CallsParser import CallsParser
 
@@ -23,6 +24,7 @@ __all__ = [
     "CallParseError",
     "CallSyntaxError",
     "CallToken",
+    "CallTree",
     "ParseResult",
     "Suggestion",
     "parse",
@@ -36,7 +38,10 @@ __all__ = [
 @dataclass
 class ParseResult:
     valid: bool
-    tree: CallsParser.DamageCallContext
+    #: None only when error recovery couldn't commit to either kind of call --
+    #: which needs the very first word to be unusable, as in "Zzzzz". A valid
+    #: parse always has a tree.
+    tree: CallTree | None
     errors: list[CallSyntaxError]
 
 
@@ -60,10 +65,24 @@ def _make_parser(
     return parser, listener, tokens
 
 
+def _unwrap(ctx: CallsParser.CallContext) -> CallTree | None:
+    """The damage or defensive call under a `call` context, if either survived.
+
+    Both children are checked for None rather than just returning whichever the
+    grammar says must be there: after error recovery the `call` rule can end up
+    with neither, since the choice between them is made on the first token.
+    """
+    damage_call: CallsParser.DamageCallContext | None = ctx.damageCall()
+    if damage_call is not None:
+        return damage_call
+    defensive_call: CallsParser.DefensiveCallContext | None = ctx.defensiveCall()
+    return defensive_call
+
+
 def parse(text: str) -> ParseResult:
     """Parse `text` as a call, collecting any syntax errors instead of raising."""
     parser, listener, _tokens = _make_parser(text)
-    tree = parser.damageCall()
+    tree = _unwrap(parser.call())
     errors = listener.to_errors(text)
     return ParseResult(valid=not errors, tree=tree, errors=errors)
 
@@ -79,7 +98,7 @@ def normalize(text: str) -> str:
     Raises CallParseError if `text` is not a valid call.
     """
     result = parse(text)
-    if not result.valid:
+    if not result.valid or result.tree is None:
         raise CallParseError(result.errors)
     return Canonicalizer().canonicalize(result.tree)
 
@@ -103,8 +122,8 @@ def tokenize(text: str) -> list[CallToken]:
     returned spans do not always tile the input.
     """
     parser, _listener, tokens = _make_parser(text)
-    tree = parser.damageCall()
+    tree = _unwrap(parser.call())
     # The parser reads the stream lazily, so it is only fully populated once
-    # damageCall() has run -- fill() then adds nothing, but costs nothing either.
+    # call() has run -- fill() then adds nothing, but costs nothing either.
     tokens.fill()
     return _tokenize_tree(text, tree, tokens)

@@ -14,8 +14,9 @@ endorsed by the creators of Altered LARP.
   to re-use data across the tech stacks. When the grammar changes in the future,
   we aim to have minimal changes to the rest of the code.
 - **Parse and validate** a call as free-typed text: case-insensitive,
-  tolerant of spaces or hyphens as word separators, so a user can type
-  loosely and still get a correct yes/no plus error positions.
+  tolerant of spaces, hyphens, commas or colons as word separators,
+  so a user can type loosely — or exactly as the rulebook prints it,
+  commas and all — and still get a correct yes/no plus error positions.
 - **Normalize** any valid call to one canonical form — each word
   capitalized, hyphen-separated (`Knockdown-5-Fire`) — regardless of how it was
   capitalized or spaced by the person typing it. Word order is
@@ -57,8 +58,9 @@ endorsed by the creators of Altered LARP.
   engine — it exists because no Python port of `antlr4-c3` does. It's
   intentionally scoped to a grammar this small and non-recursive; it
   is not meant to generalize to arbitrary ANTLR grammars.
-- **Not calls other than Damage Calls.** Power Word, Power Light, and
-  spells are not *Damage Calls** and are out of scope. Same with Ability
-  Calls, Concoctions, Defensive calls etc.
+- **Not every kind of call.** Damage Calls (_§8.3_) and Defensive Calls
+  (_§8.4_) are in scope. Power Word, Power Light, and spells are not
+  Damage Calls and are out of scope — same with Ability Calls,
+  Concoctions, etc.
 - **Not targeting languages beyond Python and JS/TS.** Other ANTLR
   targets (Java, C#, Go, etc.) are out of scope.

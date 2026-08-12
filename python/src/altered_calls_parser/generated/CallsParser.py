@@ -9,27 +9,38 @@ else:
 
 def serializedATN():
     return [
-        4,1,38,65,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
-        6,2,7,7,7,1,0,1,0,3,0,19,8,0,1,0,3,0,22,8,0,3,0,24,8,0,1,0,3,0,27,
-        8,0,1,0,3,0,30,8,0,1,0,1,0,1,1,3,1,35,8,1,1,1,1,1,1,1,1,1,1,2,3,
-        2,42,8,2,1,2,1,2,1,3,1,3,1,4,1,4,1,4,1,4,1,4,1,4,1,4,3,4,55,8,4,
-        1,5,1,5,1,5,1,5,1,6,1,6,1,7,1,7,1,7,0,0,8,0,2,4,6,8,10,12,14,0,3,
-        1,0,4,18,3,0,19,19,22,23,35,35,1,0,24,33,69,0,23,1,0,0,0,2,34,1,
-        0,0,0,4,41,1,0,0,0,6,45,1,0,0,0,8,54,1,0,0,0,10,56,1,0,0,0,12,60,
-        1,0,0,0,14,62,1,0,0,0,16,24,3,2,1,0,17,19,3,4,2,0,18,17,1,0,0,0,
-        18,19,1,0,0,0,19,21,1,0,0,0,20,22,3,6,3,0,21,20,1,0,0,0,21,22,1,
-        0,0,0,22,24,1,0,0,0,23,16,1,0,0,0,23,18,1,0,0,0,24,26,1,0,0,0,25,
-        27,3,8,4,0,26,25,1,0,0,0,26,27,1,0,0,0,27,29,1,0,0,0,28,30,3,8,4,
-        0,29,28,1,0,0,0,29,30,1,0,0,0,30,31,1,0,0,0,31,32,5,0,0,1,32,1,1,
-        0,0,0,33,35,5,1,0,0,34,33,1,0,0,0,34,35,1,0,0,0,35,36,1,0,0,0,36,
-        37,5,2,0,0,37,38,5,3,0,0,38,39,3,6,3,0,39,3,1,0,0,0,40,42,5,1,0,
-        0,41,40,1,0,0,0,41,42,1,0,0,0,42,43,1,0,0,0,43,44,7,0,0,0,44,5,1,
-        0,0,0,45,46,5,36,0,0,46,7,1,0,0,0,47,55,3,10,5,0,48,55,5,19,0,0,
-        49,55,5,20,0,0,50,55,5,21,0,0,51,55,5,22,0,0,52,55,5,23,0,0,53,55,
-        3,14,7,0,54,47,1,0,0,0,54,48,1,0,0,0,54,49,1,0,0,0,54,50,1,0,0,0,
-        54,51,1,0,0,0,54,52,1,0,0,0,54,53,1,0,0,0,55,9,1,0,0,0,56,57,3,6,
-        3,0,57,58,3,12,6,0,58,59,5,34,0,0,59,11,1,0,0,0,60,61,7,1,0,0,61,
-        13,1,0,0,0,62,63,7,2,0,0,63,15,1,0,0,0,8,18,21,23,26,29,34,41,54
+        4,1,59,97,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,1,0,1,0,1,0,1,0,1,
+        0,1,0,3,0,31,8,0,1,1,1,1,3,1,35,8,1,1,1,3,1,38,8,1,3,1,40,8,1,1,
+        1,3,1,43,8,1,1,1,3,1,46,8,1,1,2,3,2,49,8,2,1,2,1,2,1,2,1,2,1,3,3,
+        3,56,8,3,1,3,1,3,1,4,1,4,1,5,1,5,1,5,1,5,1,5,1,5,1,5,3,5,69,8,5,
+        1,6,1,6,1,6,1,6,1,7,1,7,1,8,1,8,1,9,1,9,1,9,1,9,1,9,1,9,1,9,1,9,
+        1,9,3,9,88,8,9,1,10,4,10,91,8,10,11,10,12,10,92,1,11,1,11,1,11,0,
+        0,12,0,2,4,6,8,10,12,14,16,18,20,22,0,5,1,0,4,18,3,0,19,19,22,23,
+        35,35,1,0,24,33,1,0,40,41,1,0,57,57,104,0,30,1,0,0,0,2,39,1,0,0,
+        0,4,48,1,0,0,0,6,55,1,0,0,0,8,59,1,0,0,0,10,68,1,0,0,0,12,70,1,0,
+        0,0,14,74,1,0,0,0,16,76,1,0,0,0,18,87,1,0,0,0,20,90,1,0,0,0,22,94,
+        1,0,0,0,24,25,3,2,1,0,25,26,5,0,0,1,26,31,1,0,0,0,27,28,3,18,9,0,
+        28,29,5,0,0,1,29,31,1,0,0,0,30,24,1,0,0,0,30,27,1,0,0,0,31,1,1,0,
+        0,0,32,40,3,4,2,0,33,35,3,6,3,0,34,33,1,0,0,0,34,35,1,0,0,0,35,37,
+        1,0,0,0,36,38,3,8,4,0,37,36,1,0,0,0,37,38,1,0,0,0,38,40,1,0,0,0,
+        39,32,1,0,0,0,39,34,1,0,0,0,40,42,1,0,0,0,41,43,3,10,5,0,42,41,1,
+        0,0,0,42,43,1,0,0,0,43,45,1,0,0,0,44,46,3,10,5,0,45,44,1,0,0,0,45,
+        46,1,0,0,0,46,3,1,0,0,0,47,49,5,1,0,0,48,47,1,0,0,0,48,49,1,0,0,
+        0,49,50,1,0,0,0,50,51,5,2,0,0,51,52,5,3,0,0,52,53,3,8,4,0,53,5,1,
+        0,0,0,54,56,5,1,0,0,55,54,1,0,0,0,55,56,1,0,0,0,56,57,1,0,0,0,57,
+        58,7,0,0,0,58,7,1,0,0,0,59,60,5,57,0,0,60,9,1,0,0,0,61,69,3,12,6,
+        0,62,69,5,19,0,0,63,69,5,20,0,0,64,69,5,21,0,0,65,69,5,22,0,0,66,
+        69,5,23,0,0,67,69,3,16,8,0,68,61,1,0,0,0,68,62,1,0,0,0,68,63,1,0,
+        0,0,68,64,1,0,0,0,68,65,1,0,0,0,68,66,1,0,0,0,68,67,1,0,0,0,69,11,
+        1,0,0,0,70,71,3,8,4,0,71,72,3,14,7,0,72,73,5,34,0,0,73,13,1,0,0,
+        0,74,75,7,1,0,0,75,15,1,0,0,0,76,77,7,2,0,0,77,17,1,0,0,0,78,79,
+        5,36,0,0,79,88,3,20,10,0,80,88,5,37,0,0,81,88,5,38,0,0,82,83,5,39,
+        0,0,83,88,7,3,0,0,84,85,5,42,0,0,85,88,5,43,0,0,86,88,5,44,0,0,87,
+        78,1,0,0,0,87,80,1,0,0,0,87,81,1,0,0,0,87,82,1,0,0,0,87,84,1,0,0,
+        0,87,86,1,0,0,0,88,19,1,0,0,0,89,91,3,22,11,0,90,89,1,0,0,0,91,92,
+        1,0,0,0,92,90,1,0,0,0,92,93,1,0,0,0,93,21,1,0,0,0,94,95,8,4,0,0,
+        95,23,1,0,0,0,11,30,34,37,39,42,45,48,55,68,87,92
     ]
 
 class CallsParser ( Parser ):
@@ -48,7 +59,12 @@ class CallsParser ( Parser ):
                      "'RAGE'", "'SLAM'", "'SLAY'", "'STUN'", "'FLESH'", 
                      "'HEAL'", "'REPAIR'", "'FOCUS'", "'STAMINA'", "'FIRE'", 
                      "'DARK'", "'LIGHT'", "'POISON'", "'RAD'", "'RADIATION'", 
-                     "'AURIC'", "'FAE'", "'DEEP'", "'ICE'", "'DRAIN'", "'ARMOUR'" ]
+                     "'AURIC'", "'FAE'", "'DEEP'", "'ICE'", "'DRAIN'", "'ARMOUR'", 
+                     "'MITIGATE'", "'SACRIFICE'", "'PARRY'", "'PHASE'", 
+                     "'OUT'", "'IN'", "'SHRUG'", "'OFF'", "'WITHSTAND'", 
+                     "'BALANCED'", "'ETHEREAL'", "'FERAL'", "'DEFENSE'", 
+                     "'INSPIRED'", "'MORALE'", "'RECEDING'", "'TIDE'", "'REINFORCED'", 
+                     "'MIND'", "'STURDY'", "'SUNKISSED'" ]
 
     symbolicNames = [ "<INVALID>", "OVERWHELM", "FULL", "AUTO", "BREAK", 
                       "CHARM", "COMMAND", "DAZE", "DEATH", "DISARM", "FEAR", 
@@ -56,19 +72,28 @@ class CallsParser ( Parser ):
                       "SLAY", "STUN", "FLESH", "HEAL", "REPAIR", "FOCUS", 
                       "STAMINA", "FIRE", "DARK", "LIGHT", "POISON", "RAD", 
                       "RADIATION", "AURIC", "FAE", "DEEP", "ICE", "DRAIN", 
-                      "ARMOUR", "NUMBER", "SEP", "IDENT" ]
+                      "ARMOUR", "MITIGATE", "SACRIFICE", "PARRY", "PHASE", 
+                      "OUT", "IN", "SHRUG", "OFF", "WITHSTAND", "BALANCED", 
+                      "ETHEREAL", "FERAL", "DEFENSE", "INSPIRED", "MORALE", 
+                      "RECEDING", "TIDE", "REINFORCED", "MIND", "STURDY", 
+                      "SUNKISSED", "NUMBER", "SEP", "IDENT" ]
 
-    RULE_damageCall = 0
-    RULE_fullAuto = 1
-    RULE_effect = 2
-    RULE_number = 3
-    RULE_damageType = 4
-    RULE_drainDamageType = 5
-    RULE_resource = 6
-    RULE_elemental = 7
+    RULE_call = 0
+    RULE_damageCall = 1
+    RULE_fullAuto = 2
+    RULE_effect = 3
+    RULE_number = 4
+    RULE_damageType = 5
+    RULE_drainDamageType = 6
+    RULE_resource = 7
+    RULE_elemental = 8
+    RULE_defensiveCall = 9
+    RULE_defenseName = 10
+    RULE_defenseWord = 11
 
-    ruleNames =  [ "damageCall", "fullAuto", "effect", "number", "damageType", 
-                   "drainDamageType", "resource", "elemental" ]
+    ruleNames =  [ "call", "damageCall", "fullAuto", "effect", "number", 
+                   "damageType", "drainDamageType", "resource", "elemental", 
+                   "defensiveCall", "defenseName", "defenseWord" ]
 
     EOF = Token.EOF
     OVERWHELM=1
@@ -106,9 +131,30 @@ class CallsParser ( Parser ):
     ICE=33
     DRAIN=34
     ARMOUR=35
-    NUMBER=36
-    SEP=37
-    IDENT=38
+    MITIGATE=36
+    SACRIFICE=37
+    PARRY=38
+    PHASE=39
+    OUT=40
+    IN=41
+    SHRUG=42
+    OFF=43
+    WITHSTAND=44
+    BALANCED=45
+    ETHEREAL=46
+    FERAL=47
+    DEFENSE=48
+    INSPIRED=49
+    MORALE=50
+    RECEDING=51
+    TIDE=52
+    REINFORCED=53
+    MIND=54
+    STURDY=55
+    SUNKISSED=56
+    NUMBER=57
+    SEP=58
+    IDENT=59
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -119,15 +165,76 @@ class CallsParser ( Parser ):
 
 
 
-    class DamageCallContext(ParserRuleContext):
+    class CallContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
 
+        def damageCall(self):
+            return self.getTypedRuleContext(CallsParser.DamageCallContext,0)
+
+
         def EOF(self):
             return self.getToken(CallsParser.EOF, 0)
+
+        def defensiveCall(self):
+            return self.getTypedRuleContext(CallsParser.DefensiveCallContext,0)
+
+
+        def getRuleIndex(self):
+            return CallsParser.RULE_call
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCall" ):
+                return visitor.visitCall(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def call(self):
+
+        localctx = CallsParser.CallContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 0, self.RULE_call)
+        try:
+            self.state = 30
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [-1, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 57]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 24
+                self.damageCall()
+                self.state = 25
+                self.match(CallsParser.EOF)
+                pass
+            elif token in [36, 37, 38, 39, 42, 44]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 27
+                self.defensiveCall()
+                self.state = 28
+                self.match(CallsParser.EOF)
+                pass
+            else:
+                raise NoViableAltException(self)
+
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class DamageCallContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
 
         def fullAuto(self):
             return self.getTypedRuleContext(CallsParser.FullAutoContext,0)
@@ -163,56 +270,54 @@ class CallsParser ( Parser ):
     def damageCall(self):
 
         localctx = CallsParser.DamageCallContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 0, self.RULE_damageCall)
+        self.enterRule(localctx, 2, self.RULE_damageCall)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 23
+            self.state = 39
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,2,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,3,self._ctx)
             if la_ == 1:
-                self.state = 16
+                self.state = 32
                 self.fullAuto()
                 pass
 
             elif la_ == 2:
-                self.state = 18
+                self.state = 34
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if (((_la) & ~0x3f) == 0 and ((1 << _la) & 524274) != 0):
-                    self.state = 17
+                    self.state = 33
                     self.effect()
 
 
-                self.state = 21
+                self.state = 37
                 self._errHandler.sync(self)
-                la_ = self._interp.adaptivePredict(self._input,1,self._ctx)
+                la_ = self._interp.adaptivePredict(self._input,2,self._ctx)
                 if la_ == 1:
-                    self.state = 20
+                    self.state = 36
                     self.number()
 
 
                 pass
 
 
-            self.state = 26
+            self.state = 42
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,3,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,4,self._ctx)
             if la_ == 1:
-                self.state = 25
+                self.state = 41
                 self.damageType()
 
 
-            self.state = 29
+            self.state = 45
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 85898821632) != 0):
-                self.state = 28
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 144115205255200768) != 0):
+                self.state = 44
                 self.damageType()
 
 
-            self.state = 31
-            self.match(CallsParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -257,23 +362,23 @@ class CallsParser ( Parser ):
     def fullAuto(self):
 
         localctx = CallsParser.FullAutoContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 2, self.RULE_fullAuto)
+        self.enterRule(localctx, 4, self.RULE_fullAuto)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 34
+            self.state = 48
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==1:
-                self.state = 33
+                self.state = 47
                 self.match(CallsParser.OVERWHELM)
 
 
-            self.state = 36
+            self.state = 50
             self.match(CallsParser.FULL)
-            self.state = 37
+            self.state = 51
             self.match(CallsParser.AUTO)
-            self.state = 38
+            self.state = 52
             self.number()
         except RecognitionException as re:
             localctx.exception = re
@@ -354,19 +459,19 @@ class CallsParser ( Parser ):
     def effect(self):
 
         localctx = CallsParser.EffectContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_effect)
+        self.enterRule(localctx, 6, self.RULE_effect)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 41
+            self.state = 55
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==1:
-                self.state = 40
+                self.state = 54
                 self.match(CallsParser.OVERWHELM)
 
 
-            self.state = 43
+            self.state = 57
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 524272) != 0)):
                 self._errHandler.recoverInline(self)
@@ -407,10 +512,10 @@ class CallsParser ( Parser ):
     def number(self):
 
         localctx = CallsParser.NumberContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_number)
+        self.enterRule(localctx, 8, self.RULE_number)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 45
+            self.state = 59
             self.match(CallsParser.NUMBER)
         except RecognitionException as re:
             localctx.exception = re
@@ -466,44 +571,44 @@ class CallsParser ( Parser ):
     def damageType(self):
 
         localctx = CallsParser.DamageTypeContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_damageType)
+        self.enterRule(localctx, 10, self.RULE_damageType)
         try:
-            self.state = 54
+            self.state = 68
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [36]:
+            if token in [57]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 47
+                self.state = 61
                 self.drainDamageType()
                 pass
             elif token in [19]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 48
+                self.state = 62
                 self.match(CallsParser.FLESH)
                 pass
             elif token in [20]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 49
+                self.state = 63
                 self.match(CallsParser.HEAL)
                 pass
             elif token in [21]:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 50
+                self.state = 64
                 self.match(CallsParser.REPAIR)
                 pass
             elif token in [22]:
                 self.enterOuterAlt(localctx, 5)
-                self.state = 51
+                self.state = 65
                 self.match(CallsParser.FOCUS)
                 pass
             elif token in [23]:
                 self.enterOuterAlt(localctx, 6)
-                self.state = 52
+                self.state = 66
                 self.match(CallsParser.STAMINA)
                 pass
             elif token in [24, 25, 26, 27, 28, 29, 30, 31, 32, 33]:
                 self.enterOuterAlt(localctx, 7)
-                self.state = 53
+                self.state = 67
                 self.elemental()
                 pass
             else:
@@ -551,14 +656,14 @@ class CallsParser ( Parser ):
     def drainDamageType(self):
 
         localctx = CallsParser.DrainDamageTypeContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_drainDamageType)
+        self.enterRule(localctx, 12, self.RULE_drainDamageType)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 56
+            self.state = 70
             self.number()
-            self.state = 57
+            self.state = 71
             self.resource()
-            self.state = 58
+            self.state = 72
             self.match(CallsParser.DRAIN)
         except RecognitionException as re:
             localctx.exception = re
@@ -603,11 +708,11 @@ class CallsParser ( Parser ):
     def resource(self):
 
         localctx = CallsParser.ResourceContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 12, self.RULE_resource)
+        self.enterRule(localctx, 14, self.RULE_resource)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 60
+            self.state = 74
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 34372845568) != 0)):
                 self._errHandler.recoverInline(self)
@@ -675,13 +780,224 @@ class CallsParser ( Parser ):
     def elemental(self):
 
         localctx = CallsParser.ElementalContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 14, self.RULE_elemental)
+        self.enterRule(localctx, 16, self.RULE_elemental)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 62
+            self.state = 76
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 17163091968) != 0)):
+                self._errHandler.recoverInline(self)
+            else:
+                self._errHandler.reportMatch(self)
+                self.consume()
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class DefensiveCallContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def MITIGATE(self):
+            return self.getToken(CallsParser.MITIGATE, 0)
+
+        def defenseName(self):
+            return self.getTypedRuleContext(CallsParser.DefenseNameContext,0)
+
+
+        def SACRIFICE(self):
+            return self.getToken(CallsParser.SACRIFICE, 0)
+
+        def PARRY(self):
+            return self.getToken(CallsParser.PARRY, 0)
+
+        def PHASE(self):
+            return self.getToken(CallsParser.PHASE, 0)
+
+        def OUT(self):
+            return self.getToken(CallsParser.OUT, 0)
+
+        def IN(self):
+            return self.getToken(CallsParser.IN, 0)
+
+        def SHRUG(self):
+            return self.getToken(CallsParser.SHRUG, 0)
+
+        def OFF(self):
+            return self.getToken(CallsParser.OFF, 0)
+
+        def WITHSTAND(self):
+            return self.getToken(CallsParser.WITHSTAND, 0)
+
+        def getRuleIndex(self):
+            return CallsParser.RULE_defensiveCall
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDefensiveCall" ):
+                return visitor.visitDefensiveCall(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def defensiveCall(self):
+
+        localctx = CallsParser.DefensiveCallContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 18, self.RULE_defensiveCall)
+        self._la = 0 # Token type
+        try:
+            self.state = 87
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [36]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 78
+                self.match(CallsParser.MITIGATE)
+                self.state = 79
+                self.defenseName()
+                pass
+            elif token in [37]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 80
+                self.match(CallsParser.SACRIFICE)
+                pass
+            elif token in [38]:
+                self.enterOuterAlt(localctx, 3)
+                self.state = 81
+                self.match(CallsParser.PARRY)
+                pass
+            elif token in [39]:
+                self.enterOuterAlt(localctx, 4)
+                self.state = 82
+                self.match(CallsParser.PHASE)
+                self.state = 83
+                _la = self._input.LA(1)
+                if not(_la==40 or _la==41):
+                    self._errHandler.recoverInline(self)
+                else:
+                    self._errHandler.reportMatch(self)
+                    self.consume()
+                pass
+            elif token in [42]:
+                self.enterOuterAlt(localctx, 5)
+                self.state = 84
+                self.match(CallsParser.SHRUG)
+                self.state = 85
+                self.match(CallsParser.OFF)
+                pass
+            elif token in [44]:
+                self.enterOuterAlt(localctx, 6)
+                self.state = 86
+                self.match(CallsParser.WITHSTAND)
+                pass
+            else:
+                raise NoViableAltException(self)
+
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class DefenseNameContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def defenseWord(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(CallsParser.DefenseWordContext)
+            else:
+                return self.getTypedRuleContext(CallsParser.DefenseWordContext,i)
+
+
+        def getRuleIndex(self):
+            return CallsParser.RULE_defenseName
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDefenseName" ):
+                return visitor.visitDefenseName(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def defenseName(self):
+
+        localctx = CallsParser.DefenseNameContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 20, self.RULE_defenseName)
+        self._la = 0 # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 90 
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            while True:
+                self.state = 89
+                self.defenseWord()
+                self.state = 92 
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & 1008806316530991102) != 0)):
+                    break
+
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class DefenseWordContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def NUMBER(self):
+            return self.getToken(CallsParser.NUMBER, 0)
+
+        def getRuleIndex(self):
+            return CallsParser.RULE_defenseWord
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDefenseWord" ):
+                return visitor.visitDefenseWord(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def defenseWord(self):
+
+        localctx = CallsParser.DefenseWordContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 22, self.RULE_defenseWord)
+        self._la = 0 # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 94
+            _la = self._input.LA(1)
+            if _la <= 0 or _la==57:
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)

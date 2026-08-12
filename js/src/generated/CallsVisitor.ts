@@ -2,6 +2,7 @@
 import { AbstractParseTreeVisitor } from "antlr4ng";
 
 
+import { CallContext } from "./CallsParser.js";
 import { DamageCallContext } from "./CallsParser.js";
 import { FullAutoContext } from "./CallsParser.js";
 import { EffectContext } from "./CallsParser.js";
@@ -10,6 +11,9 @@ import { DamageTypeContext } from "./CallsParser.js";
 import { DrainDamageTypeContext } from "./CallsParser.js";
 import { ResourceContext } from "./CallsParser.js";
 import { ElementalContext } from "./CallsParser.js";
+import { DefensiveCallContext } from "./CallsParser.js";
+import { DefenseNameContext } from "./CallsParser.js";
+import { DefenseWordContext } from "./CallsParser.js";
 
 
 /**
@@ -20,6 +24,12 @@ import { ElementalContext } from "./CallsParser.js";
  * operations with no return type.
  */
 export class CallsVisitor<Result> extends AbstractParseTreeVisitor<Result> {
+    /**
+     * Visit a parse tree produced by `CallsParser.call`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitCall?: (ctx: CallContext) => Result;
     /**
      * Visit a parse tree produced by `CallsParser.damageCall`.
      * @param ctx the parse tree
@@ -68,5 +78,23 @@ export class CallsVisitor<Result> extends AbstractParseTreeVisitor<Result> {
      * @return the visitor result
      */
     visitElemental?: (ctx: ElementalContext) => Result;
+    /**
+     * Visit a parse tree produced by `CallsParser.defensiveCall`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitDefensiveCall?: (ctx: DefensiveCallContext) => Result;
+    /**
+     * Visit a parse tree produced by `CallsParser.defenseName`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitDefenseName?: (ctx: DefenseNameContext) => Result;
+    /**
+     * Visit a parse tree produced by `CallsParser.defenseWord`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitDefenseWord?: (ctx: DefenseWordContext) => Result;
 }
 

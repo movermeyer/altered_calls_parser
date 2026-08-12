@@ -75,5 +75,40 @@
   { "id": "invalid-auto-without-full", "raw": "Auto 2", "valid": false },
 
   { "id": "invalid-power-word", "raw": "Power Word You Stun", "valid": false },
-  { "id": "invalid-power-light", "raw": "Power Light NPCs Daze", "valid": false }
+  { "id": "invalid-power-light", "raw": "Power Light NPCs Daze", "valid": false },
+
+  { "id": "parry", "raw": "Parry", "valid": true, "canonical": "Parry" },
+  { "id": "withstand", "raw": "withstand", "valid": true, "canonical": "Withstand" },
+  { "id": "shrug-off", "raw": "Shrug Off", "valid": true, "canonical": "Shrug-Off" },
+  { "id": "shrug-off-hyphenated-input", "raw": "shrug-off", "valid": true, "canonical": "Shrug-Off" },
+  { "id": "phase-out", "raw": "Phase Out", "valid": true, "canonical": "Phase-Out" },
+  { "id": "phase-in", "raw": "phase in", "valid": true, "canonical": "Phase-In" },
+  { "id": "mitigate-named-defense", "raw": "Mitigate Sturdy", "valid": true, "canonical": "Mitigate-Sturdy" },
+  { "id": "mitigate-comma-separated", "raw": "Mitigate, Balanced", "valid": true, "canonical": "Mitigate-Balanced" },
+  { "id": "mitigate-colon-separated", "raw": "Mitigate: Receding Tide", "valid": true, "canonical": "Mitigate-Receding-Tide" },
+  { "id": "mitigate-two-word-name-full-defense", "raw": "Mitigate, Full Defense", "valid": true, "canonical": "Mitigate-Full-Defense" },
+  { "id": "mitigate-two-word-name-receding-tide", "raw": "mitigate receding tide", "valid": true, "canonical": "Mitigate-Receding-Tide" },
+  { "id": "mitigate-two-word-name-reinforced-mind", "raw": "MITIGATE REINFORCED MIND", "valid": true, "canonical": "Mitigate-Reinforced-Mind" },
+  { "id": "mitigate-remaining-listed-names", "raw": "Mitigate Feral Inspired Morale Sunkissed", "valid": true, "canonical": "Mitigate-Feral-Inspired-Morale-Sunkissed" },
+  { "id": "sacrifice-takes-no-name", "raw": "Sacrifice", "valid": true, "canonical": "Sacrifice" },
+
+  { "id": "unlisted-defense-name", "raw": "Mitigate Bulwark", "valid": true, "canonical": "Mitigate-Bulwark" },
+  { "id": "unlisted-defense-name-is-recapitalized", "raw": "mitigate, bULWARK", "valid": true, "canonical": "Mitigate-Bulwark" },
+  { "id": "unlisted-defense-name-of-several-words", "raw": "Mitigate Warded Bulwark", "valid": true, "canonical": "Mitigate-Warded-Bulwark" },
+  { "id": "typo-in-a-listed-defense-name-still-parses", "raw": "Mitigate Sturdyy", "valid": true, "canonical": "Mitigate-Sturdyy" },
+  { "id": "defense-name-may-be-a-damage-keyword", "raw": "mitigate flesh", "valid": true, "canonical": "Mitigate-Flesh" },
+  { "id": "defense-name-may-be-several-damage-keywords", "raw": "Mitigate, Deep Ice", "valid": true, "canonical": "Mitigate-Deep-Ice" },
+  { "id": "defense-name-may-mix-known-and-unknown-words", "raw": "Mitigate Bulwark Fire", "valid": true, "canonical": "Mitigate-Bulwark-Fire" },
+
+  { "id": "invalid-mitigate-without-a-name", "raw": "Mitigate", "valid": false },
+  { "id": "invalid-defense-name-on-sacrifice", "raw": "Sacrifice, Ethereal", "valid": false },
+  { "id": "invalid-bare-phase", "raw": "Phase", "valid": false },
+  { "id": "invalid-bare-shrug", "raw": "Shrug", "valid": false },
+  { "id": "invalid-off-without-shrug", "raw": "Off", "valid": false },
+  { "id": "invalid-number-as-defense-name", "raw": "Mitigate 5", "valid": false },
+  { "id": "invalid-semicolon-separator", "raw": "mitigate; ethereal", "valid": false },
+  { "id": "invalid-defense-name-on-parry", "raw": "Parry Sturdy", "valid": false },
+  { "id": "invalid-defense-name-on-withstand", "raw": "Withstand Sturdy", "valid": false },
+  { "id": "invalid-damage-call-after-defensive-call", "raw": "Parry Knockdown 5 Fire", "valid": false },
+  { "id": "invalid-defense-name-without-a-defensive-call", "raw": "Sturdy", "valid": false }
 ]

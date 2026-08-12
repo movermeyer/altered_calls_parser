@@ -19,6 +19,16 @@ grammar Calls;
 //     damage, so they're out of scope for this grammar
 // * The rulebook doesn't mention the ability to Drain Armour as a resource
 //   * We extended the Drain Damage Type syntax to support Armour as a valid resource.
+// * The rulebook lists several Defense names but that list is not exhaustive
+//   (_§8.4: Defensive Calls_)
+//   * We accept any word as a Defense name, so a name we haven't heard of
+//     still parses. The Defense names mentioned in the rulebook are
+//     explicitly added, so autocomplete can offer them.
+//   * The cost is that a typo in a known name ("Mitigate Sturdyy") is a valid
+//     call rather than a misspelling we can point at
+// * The rulebook prints Mitigate calls with both a comma ("Mitigate, [Defense Name]")
+//   and with a colon ("Mitigate: [Defense Name]")
+//   * We accept both commas (and colons) as separators, and treat them as if they were spaces
 //
 // ======
 
@@ -26,17 +36,19 @@ grammar Calls;
 // Parser rules
 // ============================================================
 
+call
+    : damageCall EOF
+    | defensiveCall EOF
+    ;
+
 damageCall
-    : (fullAuto | effect? number?) damageType? damageType? EOF
+    : (fullAuto | effect? number?) damageType? damageType?
     ;
 
 // "Full Auto" is an effect like any other in the rulebook, but its call form is
 // "Full Auto [item damage]", so unlike every other effect it must state a
 // number. It therefore sits beside `effect` rather than inside it, and carries
-// the number it requires. Keeping that number here rather than writing
-// `fullAuto number` in damageCall also leaves damageCall's own `number`
-// reference singular, so the generated context keeps its `number()` accessor.
-// "Overwhelm" can still prefix it, and must come first when it does.
+// the number it requires.
 fullAuto
     : OVERWHELM? FULL AUTO number
     ;
@@ -75,6 +87,47 @@ resource
 
 elemental
     : AURIC | DARK | DEEP | FAE | FIRE | ICE | LIGHT | POISON | RAD | RADIATION
+    ;
+
+// The rulebook writes the named forms as "Mitigate, [Defense Name]";
+// the comma (or colon) is a separator the lexer skips, so it doesn't
+// appear here. Every other form takes no argument.
+defensiveCall
+    : MITIGATE defenseName
+    | SACRIFICE
+    | PARRY
+    | PHASE (OUT | IN)
+    | SHRUG OFF
+    | WITHSTAND
+    ;
+
+// A Defense name is any run of words, because the rulebook's list of them is
+// not exhaustive.
+//
+// This rule deliberately doesn't encode which words go together: with an
+// open-ended list there is nothing to check a partial name against, so
+// "Receding" is not required to be followed by "Tide".
+defenseName
+    : defenseWord+
+    ;
+
+// Any word at all, written as "every token but NUMBER" so that a Defense name
+// nobody here has heard of needs no change to this rule -- including one made
+// of words this grammar already knows in another role ("Mitigate Flesh").
+// Listing the known names instead would reject those, and a Defense may be
+// named after anything.
+//
+// NUMBER is excluded because Defense names are made of words: a digit after
+// "Mitigate" is a damage call that picked up the wrong first word far more
+// often than it is a Defense actually named "5", and excluding it keeps that
+// diagnosable.
+//
+// The known names still have their own lexer keywords rather than falling to
+// IDENT, so each keeps a canonical capitalization and can be offered as a
+// completion; the completion engines hold that list, since the grammar no
+// longer needs it.
+defenseWord
+    : ~NUMBER
     ;
 
 // ============================================================
@@ -132,13 +185,41 @@ ICE       : 'ICE';
 DRAIN     : 'DRAIN';
 ARMOUR    : 'ARMOUR';
 
+MITIGATE  : 'MITIGATE';
+SACRIFICE : 'SACRIFICE';
+PARRY     : 'PARRY';
+PHASE     : 'PHASE';
+OUT       : 'OUT';
+IN        : 'IN';
+SHRUG     : 'SHRUG';
+OFF       : 'OFF';
+WITHSTAND : 'WITHSTAND';
+
+// The Defense names the rulebook lists. "FULL" is not repeated here: it is
+// already a keyword for "Full Auto", and one token can only be declared once,
+// so "Full Defense" reuses it.
+BALANCED  : 'BALANCED';
+ETHEREAL  : 'ETHEREAL';
+FERAL     : 'FERAL';
+DEFENSE   : 'DEFENSE';
+INSPIRED  : 'INSPIRED';
+MORALE    : 'MORALE';
+RECEDING  : 'RECEDING';
+TIDE      : 'TIDE';
+REINFORCED: 'REINFORCED';
+MIND      : 'MIND';
+STURDY    : 'STURDY';
+SUNKISSED : 'SUNKISSED';
+
 NUMBER    : [0-9]+;
 
 // Hyphens and whitespace are both valid separators between words, and
 // runs of either collapse to a single separator -- this alone makes
 // already-hyphenated canonical text (e.g. "knockdown-5-fire") parse
-// identically to space-separated input.
-SEP       : [ \t\r\n\-]+ -> skip;
+// identically to space-separated input. Commas and colons join them because
+// the rulebook prints defensive calls as "Mitigate, [Defense Name]" and
+// "Mitigate: [Defense Name]" inconsistently.
+SEP       : [ \t\r\n\-,:]+ -> skip;
 
 // Any other run of letters becomes an opaque token instead of a raw
 // lexer error, turning unrecognized words into ordinary parser syntax

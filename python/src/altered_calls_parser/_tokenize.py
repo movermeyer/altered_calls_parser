@@ -15,15 +15,17 @@ English is hard-coded against a role name here.
 from dataclasses import dataclass
 
 from antlr4 import CommonTokenStream, ParserRuleContext, Token
-from antlr4.tree.Tree import TerminalNode
+from antlr4.tree.Tree import ErrorNode, TerminalNode
 
 from ._tokens import (
     ROLE_CATEGORIES,
     ROLE_DESCRIPTIONS,
     ROLE_LABELS,
     WORDS,
+    title_case,
     token_name,
 )
+from ._tree import CallTree
 from .generated.CallsLexer import CallsLexer
 from .generated.CallsParser import CallsParser
 from .generated.CallsVisitor import CallsVisitor
@@ -45,7 +47,8 @@ class CallToken:
     #: ("break", "charm", "command", "daze", "death", "disarm", "fear",
     #: "knockdown", "knockout", "maim", "pin", "rage", "slam", "slay", "stun"),
     #: "full-auto", "amount", "damage-type", "drain-amount", "drain-resource",
-    #: "drain", "unknown".
+    #: "drain", "mitigate", "parry", "phase-out", "phase-in", "sacrifice",
+    #: "shrug-off", "withstand", "defense-name", "unknown".
     role: str
     #: Coarse grouping for colour-coding: one of `categoryOrder`, or "unknown".
     #: Several roles share a category -- a drain's amount and a call's damage
@@ -75,8 +78,36 @@ def _symbol(node: TerminalNode | None) -> Token | None:
     return None if node is None else node.symbol
 
 
+#: Which of §8.4's seven forms a defensive call is, keyed by its first word --
+#: which is what the grammar itself picks the alternative on. PHASE is absent
+#: because it alone needs a second word to tell its two forms apart.
+_DEFENSIVE_ROLES = {
+    "MITIGATE": "mitigate",
+    "SACRIFICE": "sacrifice",
+    "PARRY": "parry",
+    "SHRUG": "shrug-off",
+    "WITHSTAND": "withstand",
+}
+
+
+def _defensive_role(ctx: CallsParser.DefensiveCallContext) -> str:
+    """The role every keyword of this defensive call carries.
+
+    The role belongs to the call as a whole rather than to its individual
+    words -- "Shrug" and "Off" are one call between them, and the rulebook has
+    one sentence to say about the pair.
+    """
+    if ctx.PHASE() is not None:
+        # Half-typed input ("phase") reaches here with neither word, and there
+        # is nothing to tell the two apart by; the first alternative is as good
+        # a guess as the second, and tokenize() is best-effort on invalid input.
+        return "phase-in" if ctx.IN() is not None else "phase-out"
+    role = _DEFENSIVE_ROLES.get(token_name(ctx.start.type))
+    return role if role is not None else "unknown"
+
+
 class _Tokenizer(CallsVisitor):
-    """Walks a damageCall parse tree, recording which part of the syntax each
+    """Walks a call parse tree, recording which part of the syntax each
     matched terminal belongs to. The structural sibling of Canonicalizer, with
     one difference: Canonicalizer pushes canonical words as string constants
     and so never needs a terminal to read a position from, whereas every role
@@ -93,9 +124,12 @@ class _Tokenizer(CallsVisitor):
         super().__init__()
         self.claimed: list[tuple[Token, str]] = []
 
-    def collect(self, tree: CallsParser.DamageCallContext) -> list[tuple[Token, str]]:
+    def collect(self, tree: CallTree | None) -> list[tuple[Token, str]]:
         self.claimed = []
-        self.visitDamageCall(tree)
+        if isinstance(tree, CallsParser.DefensiveCallContext):
+            self.visitDefensiveCall(tree)
+        elif tree is not None:
+            self.visitDamageCall(tree)
         return self.claimed
 
     def _push(self, token: Token | None, role: str) -> None:
@@ -169,6 +203,28 @@ class _Tokenizer(CallsVisitor):
     def visitResource(self, ctx: CallsParser.ResourceContext) -> None:
         self._push_leaf(ctx, "drain-resource")
 
+    def visitDefensiveCall(self, ctx: CallsParser.DefensiveCallContext) -> None:
+        # Every one of the seven forms is a run of keywords optionally followed
+        # by a Defense name, and all the keywords of one form share its role --
+        # so this covers all seven without a branch per form.
+        role = _defensive_role(ctx)
+        for child in ctx.getChildren():
+            if isinstance(child, CallsParser.DefenseNameContext):
+                self.visitDefenseName(child)
+            elif isinstance(child, TerminalNode) and not isinstance(child, ErrorNode):
+                # Error nodes are TerminalNodes too, and they hang off whichever
+                # rule was being matched when recovery kicked in -- so claiming
+                # them here would label the word that broke the call as part of
+                # it. Leaving them unclaimed sends them to "unknown" instead.
+                self._push(child.symbol, role)
+
+    def visitDefenseName(self, ctx: CallsParser.DefenseNameContext) -> None:
+        for word in ctx.defenseWord():
+            self.visitDefenseWord(word)
+
+    def visitDefenseWord(self, ctx: CallsParser.DefenseWordContext) -> None:
+        self._push_leaf(ctx, "defense-name")
+
 
 def _unclaimed(
     token_stream: CommonTokenStream, claimed: list[tuple[Token, str]]
@@ -196,9 +252,15 @@ def _to_call_token(text: str, token: Token, role: str) -> CallToken:
 
     canonical = ""
     if role != "unknown":
-        canonical = (
-            slice_ if token.type == CallsLexer.NUMBER else WORDS[token_name(token.type)]
-        )
+        if token.type == CallsLexer.NUMBER:
+            canonical = slice_
+        elif token.type == CallsLexer.IDENT:
+            # A Defense name the rulebook doesn't list -- the only place IDENT
+            # is part of a call at all. There is no canonical spelling on file
+            # for it, so it keeps the player's word, capitalized like the rest.
+            canonical = title_case(slice_)
+        else:
+            canonical = WORDS[token_name(token.type)]
 
     return CallToken(
         start=start,
@@ -214,7 +276,7 @@ def _to_call_token(text: str, token: Token, role: str) -> CallToken:
 
 def tokenize_tree(
     text: str,
-    tree: CallsParser.DamageCallContext,
+    tree: CallTree | None,
     token_stream: CommonTokenStream,
 ) -> list[CallToken]:
     """Label each word of `text` with the part of the syntax it belongs to.
@@ -222,7 +284,9 @@ def tokenize_tree(
     Takes the tree and token stream rather than parsing for itself so that the
     public tokenize() in __init__.py can build them the same way parse() does,
     off one CaseChangingCharStream, instead of standing up a second pipeline
-    that could drift from it.
+    that could drift from it. `tree` is None when error recovery could not tell
+    which kind of call was meant, in which case every word comes back
+    "unknown".
 
     Invalid input still yields whatever the parser's error recovery managed to
     recognise, with the words it could not place coming back as "unknown" -- so

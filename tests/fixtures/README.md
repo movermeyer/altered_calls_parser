@@ -54,7 +54,7 @@ Each entry of `tokens`:
 | `end`       | integer | end offset (exclusive)                                                      |
 | `text`      | string  | the input slice, in its original casing                                     |
 | `canonical` | string  | the spelling `normalize` would write (`""` when `role` is `unknown`)        |
-| `role`      | string  | e.g. `effect`, `amount`, `drain-amount`, `drain-resource`, `unknown`         |
+| `role`      | string  | e.g. `effect`, `amount`, `drain-amount`, `drain-resource`, `mitigate`, `defense-name`, `unknown` |
 
 `category`, `label` and `description` are deliberately absent: all three are
 lookups from `shared/canonical-tokens.json` keyed by `role`, so pinning them

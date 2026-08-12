@@ -9,6 +9,13 @@ with _TOKENS_PATH.open() as _f:
 
 WORDS: dict[str, str] = _TOKENS["words"]  # type: ignore[assignment]
 
+# The Defense names the rulebook does list, as canonical words. The grammar
+# accepts any word at all as a Defense name, so there is nothing in it left to
+# complete against -- _completion.py offers these on its behalf.
+DEFENSE_NAME_WORDS: list[str] = [
+    WORDS[name] for name in _TOKENS["defenseNameWords"]  # type: ignore[attr-defined]
+]
+
 # Player-facing vocabulary used by _hints.py to describe what belongs where.
 CATEGORIES: dict[str, str] = _TOKENS["categories"]  # type: ignore[assignment]
 CATEGORY_ORDER: list[str] = _TOKENS["categoryOrder"]  # type: ignore[assignment]
@@ -27,3 +34,15 @@ def token_name(token_type: int) -> str:
     name = CallsLexer.symbolicNames[token_type]
     assert name is not None
     return str(name)
+
+
+def title_case(word: str) -> str:
+    """Capitalize `word` the way the canonical spellings in WORDS are.
+
+    Only IDENT needs this: every other token has its canonical spelling on file,
+    but a Defense name the rulebook doesn't list has to borrow the player's own
+    word. IDENT is `[A-Za-z]+`, so there is no locale or grapheme subtlety here
+    -- which matters, because the TypeScript mirror must agree character for
+    character.
+    """
+    return word[:1].upper() + word[1:].lower()

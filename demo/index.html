@@ -4,18 +4,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Altered Damage Call Parser — Demo</title>
+  <title>Altered Call Parser — Demo</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 
 <body>
   <main class="card">
     <header>
-      <h1>Altered Damage Call Parser</h1>
+      <h1>Altered Call Parser</h1>
       <p class="subtitle">
         Parse, validate, normalize, and autocomplete
         <a href="https://github.com/movermeyer/altered_calls_parser" target="_blank" rel="noopener">Altered LARP</a>
-        damage calls.
+        damage calls and defensive calls.
       </p>
       <p class="disclaimer">
         Unofficial, community-built project — not affiliated with or
@@ -24,6 +24,11 @@
       <p class="disclaimer">
         This parser only tells you whether a call is syntactically valid. Additional rules may apply that make it
         semantically invalid.
+      </p>
+      <p class="disclaimer">
+        This parser doesn't cover all calls; only Damage and Defensive calls. Power Word/Light calls,
+        Spell calls, Ability calls, Consumable calls, etc. do not have grammars defined by the rulebook, so can't be
+        parsed here.
       </p>
     </header>
 
@@ -43,7 +48,8 @@
       </div>
       <p class="shape">
         Typically, a damage call reads: <b>effect</b>, then a <b>number</b>, then a
-        <b>damage type</b> — and every part is optional.
+        <b>damage type</b> — and every part is optional. A <b>defensive call</b>
+        stands alone, or names the <b>defense</b> it spends.
       </p>
       <!--
           Real links to their own ?q= URLs, so they can be opened in a new tab,
@@ -59,6 +65,8 @@
         <a class="example" href="?q=Full+Auto+3+Flesh">Full Auto 3 Flesh 🔫</a>
         <a class="example" href="?q=Overwhelm+Knockdown+10+10+Stamina+Drain+Poison">Overwhelm
           Knockdown 10 10 Stamina Drain Poison 🙈</a>
+        <a class="example" href="?q=Shrug+Off">Shrug Off 🛡️</a>
+        <a class="example" href="?q=Mitigate%2C+Receding+Tide">Mitigate, Receding Tide 🌊</a>
       </p>
     </div>
 

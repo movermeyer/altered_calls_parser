@@ -19,8 +19,8 @@ VALID_CALLS = [c for c in CALLS if c["valid"]]
 
 CATEGORIES = set(CATEGORY_ORDER) | {"unknown"}
 
-#: Spaces and hyphens, the two separators SEP skips.
-SEPARATORS = re.compile(r"^[ \t\r\n-]*$")
+#: Whitespace, hyphens, commas and colons -- everything SEP skips.
+SEPARATORS = re.compile(r"^[ \t\r\n\-,:]*$")
 
 
 @pytest.mark.parametrize("case", CASES, ids=lambda c: c["id"])

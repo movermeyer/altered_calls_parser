@@ -10,8 +10,8 @@ const ROLE_LABELS: Record<string, string> = tokens.roleLabels;
 const ROLE_DESCRIPTIONS: Record<string, string> = tokens.roleDescriptions;
 const CATEGORIES = new Set([...tokens.categoryOrder, "unknown"]);
 
-/** Spaces and hyphens, the two separators SEP skips. */
-const SEPARATORS = /^[ \t\r\n-]*$/;
+/** Whitespace, hyphens, commas and colons -- everything SEP skips. */
+const SEPARATORS = /^[ \t\r\n\-,:]*$/;
 
 describe("tokenize (shared fixture)", () => {
   test.each(cases)("$id", (c) => {

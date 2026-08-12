@@ -13,13 +13,17 @@
  * same thing and neither hard-codes English against a token name.
  */
 
-import { Token, type CommonTokenStream } from "antlr4ng";
+import { ErrorNode, TerminalNode, Token, type CommonTokenStream } from "antlr4ng";
 
+import { titleCase } from "./canonical.js";
 import { CallsLexer } from "./generated/CallsLexer.js";
 import tokens from "./generated/canonical-tokens.json" with { type: "json" };
 import {
+  DefenseNameContext,
+  DefensiveCallContext,
   type DamageCallContext,
   type DamageTypeContext,
+  type DefenseWordContext,
   type DrainDamageTypeContext,
   type EffectContext,
   type ElementalContext,
@@ -28,6 +32,7 @@ import {
   type ResourceContext,
 } from "./generated/CallsParser.js";
 import { CallsVisitor } from "./generated/CallsVisitor.js";
+import type { CallTree } from "./tree.js";
 
 const WORDS: Record<string, string> = tokens.words;
 const ROLE_CATEGORIES: Record<string, string> = tokens.roleCategories;
@@ -61,6 +66,14 @@ export type CallTokenRole =
   | "drain-amount"
   | "drain-resource"
   | "drain"
+  | "mitigate"
+  | "parry"
+  | "phase-out"
+  | "phase-in"
+  | "sacrifice"
+  | "shrug-off"
+  | "withstand"
+  | "defense-name"
   | "unknown";
 
 export interface CallToken {
@@ -140,18 +153,53 @@ function maybe<T>(value: T): T | null {
 }
 
 /**
- * Walks a damageCall parse tree, recording which part of the syntax each
- * matched terminal belongs to. The structural sibling of Canonicalizer, with
- * one difference: Canonicalizer pushes canonical words as string constants and
- * so never needs a terminal to read a position from, whereas every role here
- * has to be pinned to the token that actually carries it.
+ * Which of §8.4's seven forms a defensive call is, keyed by its first word --
+ * which is what the grammar itself picks the alternative on. PHASE is absent
+ * because it alone needs a second word to tell its two forms apart.
+ */
+const DEFENSIVE_ROLES: Record<string, CallTokenRole> = {
+  MITIGATE: "mitigate",
+  SACRIFICE: "sacrifice",
+  PARRY: "parry",
+  SHRUG: "shrug-off",
+  WITHSTAND: "withstand",
+};
+
+/**
+ * The role every keyword of this defensive call carries.
+ *
+ * The role belongs to the call as a whole rather than to its individual words
+ * -- "Shrug" and "Off" are one call between them, and the rulebook has one
+ * sentence to say about the pair.
+ */
+function defensiveRole(ctx: DefensiveCallContext): CallTokenRole {
+  if (ctx.PHASE()) {
+    // Half-typed input ("phase") reaches here with neither word, and there is
+    // nothing to tell the two apart by; the first alternative is as good a
+    // guess as the second, and tokenize() is best-effort on invalid input.
+    return ctx.IN() ? "phase-in" : "phase-out";
+  }
+  const start = ctx.start;
+  return (start && DEFENSIVE_ROLES[tokenName(start.type)]) || "unknown";
+}
+
+/**
+ * Walks a call parse tree, recording which part of the syntax each matched
+ * terminal belongs to. The structural sibling of Canonicalizer, with one
+ * difference: Canonicalizer pushes canonical words as string constants and so
+ * never needs a terminal to read a position from, whereas every role here has
+ * to be pinned to the token that actually carries it.
  */
 class Tokenizer extends CallsVisitor<void> {
   private claimed: ClaimedToken[] = [];
 
-  public collect(tree: DamageCallContext): ClaimedToken[] {
+  public collect(tree: CallTree | null): ClaimedToken[] {
     this.claimed = [];
-    this.visitDamageCall(tree);
+    if (tree instanceof DefensiveCallContext) {
+      this.visitDefensiveCall(tree);
+    } else if (tree) {
+      this.visitDamageCall(tree);
+    }
     return this.claimed;
   }
 
@@ -236,6 +284,34 @@ class Tokenizer extends CallsVisitor<void> {
   public visitResource = (ctx: ResourceContext): void => {
     this.push(ctx.start, "drain-resource");
   };
+
+  public visitDefensiveCall = (ctx: DefensiveCallContext): void => {
+    // Every one of the seven forms is a run of keywords optionally followed by
+    // a Defense name, and all the keywords of one form share its role -- so
+    // this covers all seven without a branch per form.
+    const role = defensiveRole(ctx);
+    for (const child of ctx.children) {
+      if (child instanceof DefenseNameContext) {
+        this.visitDefenseName(child);
+      } else if (child instanceof TerminalNode && !(child instanceof ErrorNode)) {
+        // Error nodes are TerminalNodes too, and they hang off whichever rule
+        // was being matched when recovery kicked in -- so claiming them here
+        // would label the word that broke the call as part of it. Leaving them
+        // unclaimed sends them to "unknown" instead.
+        this.push(child.symbol, role);
+      }
+    }
+  };
+
+  public visitDefenseName = (ctx: DefenseNameContext): void => {
+    for (const word of ctx.defenseWord()) {
+      this.visitDefenseWord(word);
+    }
+  };
+
+  public visitDefenseWord = (ctx: DefenseWordContext): void => {
+    this.push(ctx.start, "defense-name");
+  };
 }
 
 /**
@@ -260,7 +336,16 @@ function toCallToken(text: string, { token, role }: ClaimedToken): CallToken {
 
   let canonical = "";
   if (role !== "unknown") {
-    canonical = token.type === CallsLexer.NUMBER ? slice : WORDS[tokenName(token.type)];
+    if (token.type === CallsLexer.NUMBER) {
+      canonical = slice;
+    } else if (token.type === CallsLexer.IDENT) {
+      // A Defense name the rulebook doesn't list -- the only place IDENT is
+      // part of a call at all. There is no canonical spelling on file for it,
+      // so it keeps the player's word, capitalized like the rest.
+      canonical = titleCase(slice);
+    } else {
+      canonical = WORDS[tokenName(token.type)];
+    }
   }
 
   return {
@@ -281,7 +366,8 @@ function toCallToken(text: string, { token, role }: ClaimedToken): CallToken {
  * Takes the tree and token stream rather than parsing for itself so that the
  * public tokenize() in index.ts can build them the same way parse() does, off
  * one CaseChangingCharStream, instead of standing up a second pipeline that
- * could drift from it.
+ * could drift from it. `tree` is null when error recovery could not tell which
+ * kind of call was meant, in which case every word comes back "unknown".
  *
  * Invalid input still yields whatever the parser's error recovery managed to
  * recognise, with the words it could not place coming back as "unknown" -- so a
@@ -293,7 +379,7 @@ function toCallToken(text: string, { token, role }: ClaimedToken): CallToken {
  */
 export function tokenizeTree(
   text: string,
-  tree: DamageCallContext,
+  tree: CallTree | null,
   stream: CommonTokenStream,
 ): CallToken[] {
   const claimed = new Tokenizer().collect(tree);

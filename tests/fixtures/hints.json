@@ -53,7 +53,7 @@
     "id": "unrecognisable-word-lists-categories",
     "raw": "Zzzzz",
     "kind": "unknown-word",
-    "text": "\"Zzzzz\" isn't a call word. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "text": "\"Zzzzz\" isn't a call word. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number, a damage type (like \"Fire\") or a defensive call (like \"Parry\").",
     "offendingText": "Zzzzz",
     "start": 0,
     "end": 5
@@ -62,7 +62,7 @@
     "id": "power-word-is-not-a-damage-call",
     "raw": "Power Word You Stun",
     "kind": "unknown-word",
-    "text": "\"Power\" isn't a call word. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "text": "\"Power\" isn't a call word. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number, a damage type (like \"Fire\") or a defensive call (like \"Parry\").",
     "offendingText": "Power",
     "start": 0,
     "end": 5
@@ -147,7 +147,7 @@
     "id": "armour-without-drain-amount",
     "raw": "armour drain",
     "kind": "misplaced-word",
-    "text": "\"armour\" can't go here. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number or a damage type (like \"Fire\").",
+    "text": "\"armour\" can't go here. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number, a damage type (like \"Fire\") or a defensive call (like \"Parry\").",
     "offendingText": "armour",
     "start": 0,
     "end": 6
@@ -251,5 +251,72 @@
     "start": 12,
     "end": 13,
     "suggestions": []
+  },
+  {
+    "id": "incomplete-mitigate-needs-a-name",
+    "raw": "Mitigate",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add \"Full\" or a defense name (like \"Sturdy\").",
+    "offendingText": "",
+    "start": 8,
+    "end": 8
+  },
+  {
+    "id": "incomplete-phase-needs-a-direction",
+    "raw": "Phase",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add \"In\" or \"Out\".",
+    "offendingText": "",
+    "start": 5,
+    "end": 5,
+    "suggestions": ["In", "Out"]
+  },
+  {
+    "id": "incomplete-shrug-needs-off",
+    "raw": "Shrug",
+    "kind": "incomplete",
+    "text": "The call isn't finished yet. Add \"Off\".",
+    "offendingText": "",
+    "start": 5,
+    "end": 5,
+    "suggestions": ["Off"]
+  },
+  {
+    "id": "number-is-not-a-defense-name",
+    "raw": "Mitigate 5",
+    "kind": "misplaced-word",
+    "text": "\"5\" can't go here. Here you can put \"Full\" or a defense name (like \"Sturdy\").",
+    "offendingText": "5",
+    "start": 9,
+    "end": 10
+  },
+  {
+    "id": "defense-name-on-a-call-that-takes-none",
+    "raw": "Parry Sturdy",
+    "kind": "misplaced-word",
+    "text": "The call is already complete before \"Sturdy\", so there is nothing more to add.",
+    "offendingText": "Sturdy",
+    "start": 6,
+    "end": 12,
+    "suggestions": []
+  },
+  {
+    "id": "defense-name-on-sacrifice",
+    "raw": "Sacrifice Ethereal",
+    "kind": "misplaced-word",
+    "text": "The call is already complete before \"Ethereal\", so there is nothing more to add.",
+    "offendingText": "Ethereal",
+    "start": 10,
+    "end": 18,
+    "suggestions": []
+  },
+  {
+    "id": "defense-name-without-a-defensive-call",
+    "raw": "Sturdy",
+    "kind": "misplaced-word",
+    "text": "\"Sturdy\" can't go here. Here you can put \"Overwhelm\", an effect (like \"Stun\"), a number, a damage type (like \"Fire\") or a defensive call (like \"Parry\").",
+    "offendingText": "Sturdy",
+    "start": 0,
+    "end": 6
   }
 ]

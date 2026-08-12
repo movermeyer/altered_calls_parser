@@ -21,6 +21,10 @@
   --cat-number-bg: #ddf4e4;
   --cat-damage-type: #a32d68;
   --cat-damage-type-bg: #fbdfec;
+  --cat-defense: #0f6a70;
+  --cat-defense-bg: #d6f0f2;
+  --cat-defense-name: #6b3fa0;
+  --cat-defense-name-bg: #ece0fb;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -44,6 +48,10 @@
     --cat-number-bg: #163524;
     --cat-damage-type: #f39ac4;
     --cat-damage-type-bg: #3c1d2e;
+    --cat-defense: #6fd0d8;
+    --cat-defense-bg: #103336;
+    --cat-defense-name: #c3a4f5;
+    --cat-defense-name-bg: #2b1f45;
   }
 }
 
@@ -413,6 +421,16 @@ label {
 .part[data-category="damage-type"] {
   background: var(--cat-damage-type-bg);
   color: var(--cat-damage-type);
+}
+
+.part[data-category="defense"] {
+  background: var(--cat-defense-bg);
+  color: var(--cat-defense);
+}
+
+.part[data-category="defense-name"] {
+  background: var(--cat-defense-name-bg);
+  color: var(--cat-defense-name);
 }
 
 .part:focus-visible {

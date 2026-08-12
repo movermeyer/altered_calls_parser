@@ -11,16 +11,19 @@ from antlr4 import CommonTokenStream
 
 from ._case_changing_stream import CaseChangingCharStream
 from ._grammar_shape import (
-    DAMAGE_CALL,
+    ANY_WORD_TOKEN,
+    CALL,
     NUMBER_TOKEN,
     Alt,
+    AnyWordSlot,
     Lit,
     Node,
     NumberSlot,
     Opt,
+    Rep,
     Seq,
 )
-from ._tokens import WORDS
+from ._tokens import DEFENSE_NAME_WORDS, WORDS
 from .generated.CallsLexer import CallsLexer
 
 
@@ -41,10 +44,13 @@ def nullable(node: Node | _Empty | _Fail) -> bool:
         return True
     if isinstance(node, _Fail):
         return False
-    if isinstance(node, (Lit, NumberSlot)):
+    if isinstance(node, (Lit, NumberSlot, AnyWordSlot)):
         return False
     if isinstance(node, Opt):
         return True
+    if isinstance(node, Rep):
+        # One or more, so an empty match is never enough.
+        return False
     if isinstance(node, Seq):
         return all(nullable(p) for p in node.parts)
     if isinstance(node, Alt):
@@ -59,7 +65,9 @@ def first(node: Node | _Empty | _Fail) -> set[str]:
         return {node.name}
     if isinstance(node, NumberSlot):
         return {NUMBER_TOKEN}
-    if isinstance(node, Opt):
+    if isinstance(node, AnyWordSlot):
+        return {ANY_WORD_TOKEN}
+    if isinstance(node, (Opt, Rep)):
         return first(node.part)
     if isinstance(node, Seq):
         result: set[str] = set()
@@ -103,8 +111,16 @@ def derivative(node: Node | _Empty | _Fail, token: str) -> Node | _Empty | _Fail
         return EMPTY if node.name == token else FAIL
     if isinstance(node, NumberSlot):
         return EMPTY if token == NUMBER_TOKEN else FAIL
+    if isinstance(node, AnyWordSlot):
+        # Any word at all -- which is every token the lexer can produce except
+        # NUMBER, since a Defense name is made of words.
+        return FAIL if token == NUMBER_TOKEN else EMPTY
     if isinstance(node, Opt):
         return derivative(node.part, token)
+    if isinstance(node, Rep):
+        # Having taken one, the rest are optional: d(P+) = d(P) . P*, and P*
+        # is written Opt(Rep(P)) since there is no Star node.
+        return _seq_of((derivative(node.part, token), Opt(node)))
     if isinstance(node, Seq):
         return _seq_derivative(node.parts, token)
     if isinstance(node, Alt):
@@ -126,9 +142,10 @@ def _seq_derivative(parts: tuple[Node, ...], token: str) -> Node | _Empty | _Fai
 
 
 def candidates(consumed_token_names: list[str]) -> set[str]:
-    """The set of token names (or NUMBER_TOKEN) valid immediately after
-    having consumed `consumed_token_names`, per the grammar mirror."""
-    node: Node | _Empty | _Fail = DAMAGE_CALL
+    """The set of token names (or NUMBER_TOKEN, or ANY_WORD_TOKEN) valid
+    immediately after having consumed `consumed_token_names`, per the grammar
+    mirror."""
+    node: Node | _Empty | _Fail = CALL
     for name in consumed_token_names:
         node = derivative(node, name)
         if isinstance(node, _Fail):
@@ -174,12 +191,17 @@ def suggest(text: str, cursor: int) -> list[Suggestion]:
             if partial_is_digits:
                 suggestions.append(Suggestion(kind="number"))
             continue
-        label = WORDS.get(name)
+        # A Defense name is any word at all, so there is nothing here to
+        # complete against -- the names the rulebook does list stand in.
+        labels = DEFENSE_NAME_WORDS if name == ANY_WORD_TOKEN else [WORDS[name]]
         # Canonical words are capitalized; what the user has typed so far is
         # whatever they typed, lower-cased above -- so match case-insensitively
         # while still offering the canonical spelling.
-        if label is not None and label.lower().startswith(partial):
-            suggestions.append(Suggestion(kind="keyword", label=label))
+        suggestions.extend(
+            Suggestion(kind="keyword", label=label)
+            for label in labels
+            if label.lower().startswith(partial)
+        )
 
     suggestions.sort(key=lambda s: (s.label is None, s.label or ""))
     return suggestions

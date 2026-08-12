@@ -8,6 +8,16 @@ import tokens from "./generated/canonical-tokens.json" with { type: "json" };
 
 const WORDS: Record<string, string> = tokens.words;
 
+/**
+ * The Defense names the rulebook does list, as canonical words.
+ *
+ * The grammar accepts any word at all as a Defense name (`defenseWord :
+ * ~NUMBER`), so there is nothing in it left to complete against -- these are
+ * offered on its behalf. Kept in shared/canonical-tokens.json rather than here
+ * so the Python engine offers the same set.
+ */
+const DEFENSE_NAME_WORDS: string[] = tokens.defenseNameWords.map((name) => WORDS[name]);
+
 export type Suggestion = { kind: "keyword"; label: string } | { kind: "number" };
 
 function findCaretTokenIndex(tokenStream: CommonTokenStream, cursor: number): number {
@@ -36,7 +46,7 @@ export function suggest(text: string, cursor: number): Suggestion[] {
   parser.removeErrorListeners();
   // Tolerant parse: default error-recovery builds a best-effort tree even
   // over invalid/partial input, which is what collectCandidates needs.
-  parser.damageCall();
+  parser.call();
 
   const caretTokenIndex = findCaretTokenIndex(tokenStream, cursor);
   const caretToken = tokenStream.get(caretTokenIndex);
@@ -45,9 +55,21 @@ export function suggest(text: string, cursor: number): Suggestion[] {
 
   const core = new CodeCompletionCore(parser);
   core.ignoredTokens = new Set([CallsLexer.EOF]);
+  // `defenseWord` matches any token but NUMBER, so left alone the core would
+  // report every keyword in the language wherever a Defense name may go.
+  // Marking it preferred stops the walk at the rule instead, which is answered
+  // with DEFENSE_NAME_WORDS below.
+  core.preferredRules = new Set([CallsParser.RULE_defenseWord]);
   const candidates = core.collectCandidates(caretTokenIndex);
 
   const suggestions: Suggestion[] = [];
+  if (candidates.rules.has(CallsParser.RULE_defenseWord)) {
+    for (const label of DEFENSE_NAME_WORDS) {
+      if (label.toLowerCase().startsWith(partial)) {
+        suggestions.push({ kind: "keyword", label });
+      }
+    }
+  }
   for (const tokenType of candidates.tokens.keys()) {
     if (tokenType === CallsLexer.NUMBER) {
       if (partialIsDigits) {

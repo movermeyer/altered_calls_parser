@@ -10,6 +10,18 @@ from dataclasses import dataclass
 
 NUMBER_TOKEN = "NUMBER"
 
+#: The lexer's catch-all token: any word it didn't recognize as a keyword. No
+#: slot names it -- AnyWordSlot covers it along with every keyword -- but it is
+#: still the token a made-up Defense name arrives as, which the drift guard in
+#: test_grammar_shape_consistency.py needs in order to stand one up.
+IDENT_TOKEN = "IDENT"
+
+#: Stands in for AnyWordSlot in a candidate set, where every other member is a
+#: token name. It is not a token: no single word the lexer could produce means
+#: "any word", so _completion.py answers it with the known Defense names rather
+#: than looking it up in WORDS.
+ANY_WORD_TOKEN = "ANY_WORD"
+
 
 @dataclass(frozen=True)
 class Lit:
@@ -19,6 +31,16 @@ class Lit:
 @dataclass(frozen=True)
 class NumberSlot:
     pass
+
+
+@dataclass(frozen=True)
+class AnyWordSlot:
+    """Any single word, keyword or not -- the grammar's `defenseWord : ~NUMBER`.
+
+    Unlike every other slot this one has no fixed set of words to offer, so
+    _completion.py answers it with the Defense names the rulebook does list. An
+    autocomplete that said "any word goes here" would be noise.
+    """
 
 
 @dataclass(frozen=True)
@@ -36,7 +58,14 @@ class Opt:
     part: "Node"
 
 
-Node = Lit | NumberSlot | Seq | Alt | Opt
+@dataclass(frozen=True)
+class Rep:
+    """One or more of `part`, mirroring ANTLR's `+`."""
+
+    part: "Node"
+
+
+Node = Lit | NumberSlot | AnyWordSlot | Seq | Alt | Opt | Rep
 
 # "Overwhelm" prefixes the effect keyword itself, so it lives inside this rule
 # rather than beside it in DAMAGE_CALL.
@@ -108,3 +137,27 @@ DAMAGE_CALL = Seq(
         Opt(DAMAGE_TYPE),
     )
 )
+
+# Any word at all, because the rulebook's list of Defense names isn't
+# exhaustive -- including one this grammar knows in another role ("Mitigate
+# Flesh"). A name is a run of them, word by word rather than name by name: the
+# grammar doesn't require "Receding" to be followed by "Tide", so neither does
+# this.
+DEFENSE_WORD = AnyWordSlot()
+
+DEFENSE_NAME = Rep(DEFENSE_WORD)
+
+DEFENSIVE_CALL = Alt(
+    (
+        Seq((Lit("MITIGATE"), DEFENSE_NAME)),
+        Lit("SACRIFICE"),
+        Lit("PARRY"),
+        Seq((Lit("PHASE"), Alt((Lit("OUT"), Lit("IN"))))),
+        Seq((Lit("SHRUG"), Lit("OFF"))),
+        Lit("WITHSTAND"),
+    )
+)
+
+# The entry rule. Damage calls come first, matching the grammar -- it matters
+# only for readability here, since candidates() unions the branches anyway.
+CALL = Alt((DAMAGE_CALL, DEFENSIVE_CALL))

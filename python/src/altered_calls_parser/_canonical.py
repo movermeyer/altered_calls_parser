@@ -1,6 +1,8 @@
 from antlr4 import ParserRuleContext
 
-from ._tokens import WORDS, token_name
+from ._tokens import WORDS, title_case, token_name
+from ._tree import CallTree
+from .generated.CallsLexer import CallsLexer
 from .generated.CallsParser import CallsParser
 from .generated.CallsVisitor import CallsVisitor
 
@@ -10,7 +12,7 @@ def _leaf_word(ctx: ParserRuleContext) -> str:
 
 
 class Canonicalizer(CallsVisitor):
-    """Walks a damageCall parse tree, emitting canonical capitalized,
+    """Walks a call parse tree, emitting canonical capitalized,
     hyphen-separated words in grammar order. Words always come out in the
     order they were called: the two damage-type slots can hold any two
     damage types (not just two elementals), and there is no rulebook order
@@ -22,9 +24,12 @@ class Canonicalizer(CallsVisitor):
         super().__init__()
         self.words: list[str] = []
 
-    def canonicalize(self, tree: CallsParser.DamageCallContext) -> str:
+    def canonicalize(self, tree: CallTree) -> str:
         self.words = []
-        self.visitDamageCall(tree)
+        if isinstance(tree, CallsParser.DefensiveCallContext):
+            self.visitDefensiveCall(tree)
+        else:
+            self.visitDamageCall(tree)
         return "-".join(self.words)
 
     def visitDamageCall(self, ctx: CallsParser.DamageCallContext) -> None:
@@ -81,3 +86,28 @@ class Canonicalizer(CallsVisitor):
         self.words.append(ctx.number().NUMBER().getText())
         self.visitResource(ctx.resource())
         self.words.append(WORDS["DRAIN"])
+
+    def visitDefensiveCall(self, ctx: CallsParser.DefensiveCallContext) -> None:
+        # Every one of §8.4's seven forms is a run of keywords optionally
+        # followed by a Defense name, so walking the children in order covers
+        # all of them without a branch per form.
+        for child in ctx.getChildren():
+            if isinstance(child, CallsParser.DefenseNameContext):
+                self.visitDefenseName(child)
+            else:
+                self.words.append(WORDS[token_name(child.symbol.type)])
+
+    def visitDefenseName(self, ctx: CallsParser.DefenseNameContext) -> None:
+        for word in ctx.defenseWord():
+            self.visitDefenseWord(word)
+
+    def visitDefenseWord(self, ctx: CallsParser.DefenseWordContext) -> None:
+        # The rule matches any token but NUMBER, so the word is read off the
+        # token itself rather than through a generated accessor. A word the
+        # lexer didn't recognize has no canonical spelling on file -- that is
+        # what IDENT is -- so it keeps the player's own word with our
+        # capitalization applied.
+        if ctx.start.type == CallsLexer.IDENT:
+            self.words.append(title_case(ctx.start.text))
+            return
+        self.words.append(_leaf_word(ctx))

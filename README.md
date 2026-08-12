@@ -1,4 +1,4 @@
-# Unofficial Altered LARP Damage Calls parser
+# Unofficial Altered LARP calls parser
 
 > **Unofficial project.** This is a fan-made, community project and is
 > not affiliated with, endorsed by, or sponsored by the creators of
@@ -6,8 +6,10 @@
 > "Altered LARP" and any related names/marks
 > belong to their respective owners.
 
-Parses, validates, normalizes, and autocompletes "damage calls" used in
-[Altered LARP](https://www.alteredlarp.com/) (e.g. `Knockdown 5 Fire`, `Overwhelm Full Auto 3 Flesh`), from a
+Parses, validates, normalizes, and autocompletes the calls used in
+[Altered LARP](https://www.alteredlarp.com/) — damage calls
+(e.g. `Knockdown 5 Fire`, `Overwhelm Full Auto 3 Flesh`) and defensive calls
+(e.g. `Shrug Off`, `Mitigate, Receding Tide`) — from a
 single ANTLR4 grammar shared by a both a Python package and a TypeScript/JavaScript package.
 
 Based on the [version 3.2 rules](https://docs.google.com/document/d/1-WhH-Tlogm5gIzZnr2T3OYtau2sRdrpZROQMOvQcH18/edit?usp=sharing). See the top of [the grammar file](grammar/Calls.g4) for the assumptions and differences used in this parser.
@@ -32,9 +34,17 @@ Both packages expose the same five functions:
 | `suggest(text, cursor)` | Autocomplete candidates for a caret position while typing.                                               |
 | `tokenize(text)`        | Each word of `text` labelled with the part of the syntax it belongs to.                                  |
 
-Parsing is case-insensitive, and both spaces and hyphens are valid word
-separators, so already-normalized text (`Knockdown-5-Fire`) parses the
-same as `knockdown 5 fire`.
+### `parse`
+
+Parsing is case-insensitive, and spaces, hyphens, commas and colons are all
+valid word separators — so already-normalized text
+(`Knockdown-5-Fire`) parses the same as `knockdown 5 fire`, and a defensive
+call `Mitigate, Sturdy` parses the same as `Mitigate: Sturdy` or `mitigate sturdy`.
+
+`parse()` returns a `tree` that is either a damage call or a defensive call
+(`DamageCallContext | DefensiveCallContext`), which is what tells the two kinds
+apart; it is `None`/`null` only when the input was too broken for the parser to
+tell which kind was meant.
 
 ### Error hints
 

@@ -8,6 +8,11 @@ else:
 
 class CallsVisitor(ParseTreeVisitor):
 
+    # Visit a parse tree produced by CallsParser#call.
+    def visitCall(self, ctx:CallsParser.CallContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by CallsParser#damageCall.
     def visitDamageCall(self, ctx:CallsParser.DamageCallContext):
         return self.visitChildren(ctx)
@@ -45,6 +50,21 @@ class CallsVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by CallsParser#elemental.
     def visitElemental(self, ctx:CallsParser.ElementalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by CallsParser#defensiveCall.
+    def visitDefensiveCall(self, ctx:CallsParser.DefensiveCallContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by CallsParser#defenseName.
+    def visitDefenseName(self, ctx:CallsParser.DefenseNameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by CallsParser#defenseWord.
+    def visitDefenseWord(self, ctx:CallsParser.DefenseWordContext):
         return self.visitChildren(ctx)
 
 

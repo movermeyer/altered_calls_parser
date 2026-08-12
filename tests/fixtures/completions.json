@@ -8,9 +8,10 @@
     "expectedKeywordLabels": [
       "Auric", "Break", "Charm", "Command", "Dark", "Daze", "Death",
       "Deep", "Disarm", "Fae", "Fear", "Fire", "Flesh", "Focus", "Full",
-      "Heal", "Ice", "Knockdown", "Knockout", "Light", "Maim", "Overwhelm",
-      "Pin", "Poison", "Rad", "Radiation", "Rage", "Repair", "Slam",
-      "Slay", "Stamina", "Stun"
+      "Heal", "Ice", "Knockdown", "Knockout", "Light", "Maim", "Mitigate",
+      "Overwhelm", "Parry", "Phase", "Pin", "Poison", "Rad", "Radiation",
+      "Rage", "Repair", "Sacrifice", "Shrug", "Slam", "Slay", "Stamina",
+      "Stun", "Withstand"
     ]
   },
   {
@@ -156,5 +157,86 @@
       "Auric", "Dark", "Deep", "Fae", "Fire", "Flesh", "Focus",
       "Heal", "Ice", "Light", "Poison", "Rad", "Radiation", "Repair", "Stamina"
     ]
+  },
+  {
+    "id": "partial-word-prefix-mit",
+    "raw": "Mit",
+    "cursor": 3,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Mitigate"]
+  },
+  {
+    "id": "defense-names-after-mitigate",
+    "raw": "Mitigate ",
+    "cursor": 9,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": [
+      "Balanced", "Defense", "Ethereal", "Feral", "Full", "Inspired", "Mind",
+      "Morale", "Receding", "Reinforced", "Sturdy", "Sunkissed", "Tide"
+    ]
+  },
+  {
+    "id": "nothing-follows-sacrifice",
+    "raw": "Sacrifice ",
+    "cursor": 10,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": []
+  },
+  {
+    "id": "partial-defense-name",
+    "raw": "Mitigate Stu",
+    "cursor": 12,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Sturdy"]
+  },
+  {
+    "id": "defense-name-can-run-on",
+    "raw": "Mitigate Bulwark ",
+    "cursor": 17,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": [
+      "Balanced", "Defense", "Ethereal", "Feral", "Full", "Inspired", "Mind",
+      "Morale", "Receding", "Reinforced", "Sturdy", "Sunkissed", "Tide"
+    ]
+  },
+  {
+    "id": "defense-name-can-run-on-after-a-keyword-name",
+    "raw": "Mitigate Fire ",
+    "cursor": 14,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": [
+      "Balanced", "Defense", "Ethereal", "Feral", "Full", "Inspired", "Mind",
+      "Morale", "Receding", "Reinforced", "Sturdy", "Sunkissed", "Tide"
+    ]
+  },
+  {
+    "id": "unlisted-defense-names-are-not-suggested",
+    "raw": "Mitigate Fi",
+    "cursor": 11,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": []
+  },
+  {
+    "id": "phase-needs-a-direction",
+    "raw": "Phase ",
+    "cursor": 6,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["In", "Out"]
+  },
+  {
+    "id": "shrug-needs-off",
+    "raw": "Shrug ",
+    "cursor": 6,
+    "exhaustive": true,
+    "expectedNumberSlot": false,
+    "expectedKeywordLabels": ["Off"]
   }
 ]
